@@ -1,20 +1,20 @@
 ﻿using IdentityServer4.AccessTokenValidation;
 using KingTransports.Common.Filters;
-using KingTransports.TicketingService.Data;
-using KingTransports.TicketingService.Repositories;
-using KingTransports.TicketingService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using KingTransports.Common.Discovery;
 using System.Net;
+using KingTransports.FleetService.Services;
+using KingTransports.FleetService.Data;
+using KingTransports.FleetService.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
-    serverOptions.Listen(IPAddress.Any, 7001);
+    serverOptions.Listen(IPAddress.Any, 7002);
 });
 
 // Add services to the container.
@@ -27,7 +27,7 @@ builder.Services.AddLogging();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<TicketDbContext>(option =>
+builder.Services.AddDbContext<FleetDbContext>(option =>
 {
     var conn = builder.Configuration.GetConnectionString("DefaultConnection");
     option.UseNpgsql(conn);
@@ -39,7 +39,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddMassTransit(x =>
 {
     // add in memory outbox
-    x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
+    x.AddEntityFrameworkOutbox<FleetDbContext>(o =>
     {
         o.QueryDelay = TimeSpan.FromSeconds(10);
 
@@ -65,20 +65,23 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
         .AddIdentityServerAuthentication(options =>
         {
             options.Authority = "http://localhost:5050/auth";
-            options.ApiName = "ticketing";
+            options.ApiName = "fleet";
             options.RequireHttpsMetadata = false;
         });
 
+
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ticket.issue", policy =>
+    options.AddPolicy("fleet.create", policy =>
     {
-        policy.RequireScope("ticket.issue");
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireScope("fleet.create");
     });
 
-    options.AddPolicy("ticket.validate", policy =>
+    options.AddPolicy("fleet.read", policy =>
     {
-        policy.RequireScope("ticket.validate");
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireScope("fleet.read");
     });
 });
 
@@ -86,9 +89,9 @@ builder.Services.AddHealthChecks();
 
 // Add services to the container
 
-builder.Services.AddTransient<IRouteRepository, RouteRepository>();
-builder.Services.AddTransient<ITicketRepository, TicketRepository>();
-builder.Services.AddTransient<ITicketService, KingTransports.TicketingService.Services.TicketService>();
+builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
+builder.Services.AddTransient<IFleetVehicleRepository, FleetVehicleRepository>();
+builder.Services.AddTransient<IFleetVehicleService, FleetVehicleService>();
 
 builder.Services.RegisterConsulServices(builder.Configuration);
 

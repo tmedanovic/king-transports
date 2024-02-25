@@ -1,6 +1,15 @@
 {
   "Routes": [
     {
+      "Servicename": "authentication",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UseServiceDiscovery": true,
+      "RouteIsCaseSensitive": false
+    },
+    {
       "Servicename": "ticketing",
       "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
@@ -10,10 +19,10 @@
       "RouteIsCaseSensitive": false
     },
     {
-      "Servicename": "authentication",
-      "DownstreamPathTemplate": "/{everything}",
+      "Servicename": "fleet",
+      "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
-      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamPathTemplate": "/fleet/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "UseServiceDiscovery": true,
       "RouteIsCaseSensitive": false

@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.Gateway", "S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.TicketingService", "Services\KingTransports.TicketingService\KingTransports.TicketingService.csproj", "{F97277B6-CFCB-4859-A29A-9C5411DCE68A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.FleetService", "Services\KingTransports.FleetService\KingTransports.FleetService.csproj", "{6ED93871-D58B-4435-A5ED-EEF46DEF03A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6ED93871-D58B-4435-A5ED-EEF46DEF03A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6ED93871-D58B-4435-A5ED-EEF46DEF03A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6ED93871-D58B-4435-A5ED-EEF46DEF03A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6ED93871-D58B-4435-A5ED-EEF46DEF03A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
