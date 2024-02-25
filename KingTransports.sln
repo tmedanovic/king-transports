@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.Authentication", "Services\KingTransports.Authentication\KingTransports.Authentication.csproj", "{3D45F78A-D83D-466B-A88D-9B3A337D0F49}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.Common", "Services\KingTransports.Common\KingTransports.Common.csproj", "{380E12D7-D0BE-43DC-8B5F-D3A4D126E8F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.Gateway", "Services\KingTransports.Gateway\KingTransports.Gateway.csproj", "{A299C4B6-4688-4BB4-A8B2-E88EBF6B4F14}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.TicketingService", "Services\KingTransports.TicketingService\KingTransports.TicketingService.csproj", "{F97277B6-CFCB-4859-A29A-9C5411DCE68A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D45F78A-D83D-466B-A88D-9B3A337D0F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D45F78A-D83D-466B-A88D-9B3A337D0F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D45F78A-D83D-466B-A88D-9B3A337D0F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D45F78A-D83D-466B-A88D-9B3A337D0F49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{380E12D7-D0BE-43DC-8B5F-D3A4D126E8F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{380E12D7-D0BE-43DC-8B5F-D3A4D126E8F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{380E12D7-D0BE-43DC-8B5F-D3A4D126E8F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{380E12D7-D0BE-43DC-8B5F-D3A4D126E8F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A299C4B6-4688-4BB4-A8B2-E88EBF6B4F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A299C4B6-4688-4BB4-A8B2-E88EBF6B4F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A299C4B6-4688-4BB4-A8B2-E88EBF6B4F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A299C4B6-4688-4BB4-A8B2-E88EBF6B4F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F97277B6-CFCB-4859-A29A-9C5411DCE68A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C3AC4329-4DAB-4198-9BC7-94BAC9B01ED5}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,25 @@
+{
+  "GlobalConfiguration": {
+    "RequestIdKey": "X-Correlation-Id"
+  },
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/tickets",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 70001
+        }
+      ],
+      "UpstreamPathTemplate": "/api/tickets",
+      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+      "HttpHandlerOptions": {
+        "AllowAutoRedirect": false,
+        "UseCookieContainer": false,
+        "UseTracing": true,
+        "MaxConnectionsPerServer": 100
+      }
+    }
+  ]
+}

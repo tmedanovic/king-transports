@@ -1,0 +1,117 @@
+﻿using IdentityServer4.AccessTokenValidation;
+using KingTransports.Common.Filters;
+using KingTransports.TicketingService.Data;
+using KingTransports.TicketingService.Repositories;
+using KingTransports.TicketingService.Services;
+using MassTransit;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Polly;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers(config =>
+{
+    config.Filters.Add(typeof(ErrorHandlingFilter));
+});
+
+builder.Services.AddLogging();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddDbContext<TicketDbContext>(option =>
+{
+    var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+    option.UseNpgsql(conn);
+});
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Configure RabbitMq
+builder.Services.AddMassTransit(x =>
+{
+    // add in memory outbox
+    x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
+    {
+        o.QueryDelay = TimeSpan.FromSeconds(10);
+
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticket", false));
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+
+        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        {
+            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+        });
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("customPolicy", b =>
+    {
+        b.AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials()
+         .WithOrigins("http://localhost:8081");
+    });
+});
+
+builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+        .AddIdentityServerAuthentication(options =>
+        {
+            options.Authority = "http://localhost:5005";
+            options.ApiName = "ticketing";
+            options.RequireHttpsMetadata = false;
+        });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ticket.issue", policy =>
+    {
+        policy.RequireScope("ticket.issue");
+    });
+
+    options.AddPolicy("ticket.validate", policy =>
+    {
+        policy.RequireScope("ticket.validate");
+    });
+});
+
+
+
+// Add services to the container
+
+builder.Services.AddTransient<IRouteRepository, RouteRepository>();
+builder.Services.AddTransient<ITicketRepository, TicketRepository>();
+builder.Services.AddTransient<ITicketService, KingTransports.TicketingService.Services.TicketService>();
+
+var app = builder.Build();
+
+app.UseCors("customPolicy");
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+try
+{
+    DbInitializer.InitDb(app);
+}
+catch (Exception e)
+{
+
+    Console.WriteLine(e);
+}
+
+app.Run();
+
