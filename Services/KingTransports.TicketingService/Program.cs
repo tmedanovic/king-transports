@@ -6,9 +6,16 @@ using KingTransports.TicketingService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Polly;
+using KingTransports.Common.Discovery;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+{
+    serverOptions.Listen(IPAddress.Any, 7001);
+});
 
 // Add services to the container.
 builder.Services.AddControllers(config =>
@@ -86,7 +93,7 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-
+builder.Services.AddHealthChecks();
 
 // Add services to the container
 
@@ -94,13 +101,15 @@ builder.Services.AddTransient<IRouteRepository, RouteRepository>();
 builder.Services.AddTransient<ITicketRepository, TicketRepository>();
 builder.Services.AddTransient<ITicketService, KingTransports.TicketingService.Services.TicketService>();
 
+builder.Services.RegisterConsulServices(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseCors("customPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.MapHealthChecks("/health");
 app.MapControllers();
 
 try

@@ -15,14 +15,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:7001/api/tickets",
+							"raw": "http://localhost:5050/ticketing/tickets",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "7001",
+							"port": "5050",
 							"path": [
-								"api",
+								"ticketing",
 								"tickets"
 							]
 						}
@@ -35,14 +35,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:7001/api/tickets/4f84be25-3f3d-43c5-8010-8da5d7add568",
+							"raw": "http://localhost:5050/ticketing/tickets/4f84be25-3f3d-43c5-8010-8da5d7add568",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "7001",
+							"port": "5050",
 							"path": [
-								"api",
+								"ticketing",
 								"tickets",
 								"4f84be25-3f3d-43c5-8010-8da5d7add568"
 							]
@@ -65,14 +65,14 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:7001/api/tickets",
+							"raw": "http://localhost:5050/ticketing/tickets",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "7001",
+							"port": "5050",
 							"path": [
-								"api",
+								"ticketing",
 								"tickets"
 							]
 						}
@@ -85,14 +85,14 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:7001/api/tickets/81ed6ad5-d618-4458-b163-50b17031e8b6/refund",
+							"raw": "http://localhost:5050/ticketing/tickets/81ed6ad5-d618-4458-b163-50b17031e8b6/refund",
 							"protocol": "http",
 							"host": [
 								"localhost"
 							],
-							"port": "7001",
+							"port": "5050",
 							"path": [
-								"api",
+								"ticketing",
 								"tickets",
 								"81ed6ad5-d618-4458-b163-50b17031e8b6",
 								"refund"
@@ -107,6 +107,11 @@
 	"auth": {
 		"type": "oauth2",
 		"oauth2": [
+			{
+				"key": "authUrl",
+				"value": "http://localhost:5050/auth/connect/authorize",
+				"type": "string"
+			},
 			{
 				"key": "useBrowser",
 				"value": true,
@@ -130,11 +135,6 @@
 			{
 				"key": "redirect_uri",
 				"value": "https://www.getpostman.com/oauth2/callback",
-				"type": "string"
-			},
-			{
-				"key": "authUrl",
-				"value": "http://localhost:5005/connect/authorize",
 				"type": "string"
 			},
 			{

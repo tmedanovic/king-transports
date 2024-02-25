@@ -1,21 +1,24 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Ocelot.Provider.Consul;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.WebHost.ConfigureKestrel((context, serverOptions) =>
-//{
-//    serverOptions.Listen(IPAddress.Loopback, 5050);
-//});
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+{
+    serverOptions.Listen(IPAddress.Any, 5050);
+});
 
-builder.Configuration.AddJsonFile("ocelot.json");
+var configuration = builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("ocelot.json", false).Build();
 
-builder.Services.AddOcelot(builder.Configuration);
+//Ocelot
+builder.Services.AddOcelot(configuration).AddConsul();
 
+builder.Logging.AddConsole();
 var app = builder.Build();
 
-app.MapControllers();
-await app.UseOcelot();
+app.UseOcelot().Wait();
 
 app.Run();

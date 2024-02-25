@@ -3,12 +3,13 @@ using KingTransports.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using KingTransports.Common.Discovery;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
-    serverOptions.Listen(IPAddress.Loopback, 5005);
+    serverOptions.Listen(IPAddress.Any, 5005);
 });
 
 // Add services to the container.
@@ -34,7 +35,8 @@ builder.Services.AddIdentityServer()
  .AddAspNetIdentity<IdentityUser>();
 
 builder.Services.AddAuthentication();
-
+builder.Services.AddHealthChecks();
+builder.Services.RegisterConsulServices(builder.Configuration);
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -57,6 +59,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
+app.MapHealthChecks("/health");
 app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
 
 app.MapControllerRoute(

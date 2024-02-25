@@ -1,25 +1,32 @@
 {
-  "GlobalConfiguration": {
-    "RequestIdKey": "X-Correlation-Id"
-  },
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/tickets",
+      "Servicename": "ticketing",
+      "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 70001
-        }
-      ],
-      "UpstreamPathTemplate": "/api/tickets",
-      "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
-      "HttpHandlerOptions": {
-        "AllowAutoRedirect": false,
-        "UseCookieContainer": false,
-        "UseTracing": true,
-        "MaxConnectionsPerServer": 100
-      }
+      "UpstreamPathTemplate": "/ticketing/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UseServiceDiscovery": true,
+      "RouteIsCaseSensitive": false
+    },
+    {
+      "Servicename": "authentication",
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/auth/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UseServiceDiscovery": true,
+      "RouteIsCaseSensitive": false
     }
-  ]
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "OcRequestId",
+    "UseServiceDiscovery": true,
+    "ServiceDiscoveryProvider": {
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul",
+      "PollingInterval": 100
+    }
+  }
 }
