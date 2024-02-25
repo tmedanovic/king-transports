@@ -5,14 +5,14 @@ KingTrasports is a simple example of a event-driven microservices arhitecture wr
 ## Features
 
 - Authentication and authorization (Identity server 4)
-- API Gateway (Ocelot)
+- API Gateway (Ocelot) with Consul service discovery
 - Communication with MassTransit using RabbitMQ as msaage broker
 - Entity framework code-first using PostgreSQL
 - Filters for global error handling and logging
 
 ## Running the project
 
-KingTransports requires Docker and Docker compose for running PostgreSQL, MongodDB and RabbitMQ.
+KingTransports requires Docker and Docker compose for running PostgreSQL, MongodDB, RabbitMQ and Consul.
 
 ```
 docker-compose -f docker-compose.yml up
