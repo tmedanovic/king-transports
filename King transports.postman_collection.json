@@ -263,7 +263,7 @@
 		"oauth2": [
 			{
 				"key": "scope",
-				"value": "ticket.issue fleet.read fleet.create accounting.read",
+				"value": "ticket.issue ticket.validate fleet.read fleet.create accounting.read",
 				"type": "string"
 			},
 			{
