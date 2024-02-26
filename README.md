@@ -74,7 +74,7 @@ Calling `Ticketing / Create Ticket` in Ticketing postman collection should incre
 ## Missing features
 
 * RBAC
-* Mass Transactional Outbox
+* MassTransit Transactional Outbox
 * Unique constraints and indexes
 * Tenants
 * Paging
