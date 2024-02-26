@@ -58,15 +58,12 @@ namespace KingTransports.Data
         public static async Task SeedUsers(IServiceProvider serviceProvider)
         {
             using (var context = serviceProvider.GetRequiredService<ApplicationDbContext>())
-            {
-                context.Database.Migrate();
-            }
-
             using (UserManager<IdentityUser> _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>())
             using (RoleManager<IdentityRole> _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>())
             {
+                context.Database.Migrate();
 
-                foreach(var role in sampleRoles)
+                foreach (var role in sampleRoles)
                 {
                     var roleResult = await _roleManager.FindByNameAsync(role.Name);
 
