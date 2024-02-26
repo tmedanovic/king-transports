@@ -8,7 +8,7 @@ KingTrasports is a simple example of a event-driven microservices arhitecture wr
 - API Gateway (Ocelot) with Consul service discovery
 - Communication with MassTransit using RabbitMQ as message broker
 - Entity framework code-first using PostgreSQL
-- Global error handling and logging filters
+- Global error handling and logging filter
 
 ## Running the project
 
@@ -78,6 +78,6 @@ Calling `Ticketing / Create Ticket` in Ticketing postman collection should incre
 * Unique constraints and indexes
 * Tenants
 * Paging
-* Cacheing
+* Caching
 * Concurrency
 
