@@ -1,0 +1,27 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Name": "Services\\KingTransports.Authentication\\KingTransports.Authentication.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Services\\KingTransports.TicketingService\\KingTransports.TicketingService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Services\\KingTransports.FleetService\\KingTransports.FleetService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Services\\KingTransports.AccountingService\\KingTransports.AccountingService.csproj",
+        "Action": "Start"
+      },
+      {
+        "Name": "Services\\KingTransports.Gateway\\KingTransports.Gateway.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
