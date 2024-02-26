@@ -6,13 +6,13 @@ KingTrasports is a simple example of a event-driven microservices arhitecture wr
 
 - Authentication and authorization (Identity server 4)
 - API Gateway (Ocelot) with Consul service discovery
-- Communication with MassTransit using RabbitMQ as msaage broker
+- Communication with MassTransit using RabbitMQ as message broker
 - Entity framework code-first using PostgreSQL
-- Filters for global error handling and logging
+- Global error handling and logging filters
 
 ## Running the project
 
-KingTransports requires Docker and Docker compose for running PostgreSQL, MongodDB, RabbitMQ and Consul.
+KingTransports requires Docker and Docker compose for running PostgreSQL, RabbitMQ and Consul.
 
 ```
 docker-compose -f docker-compose.yml up
@@ -62,3 +62,22 @@ Login using one of test users:
 ![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_4.png?raw=true)
 
 Click Use token
+
+## Point of interest (pub/sub in action)
+
+Calling `Ticketing / Create Ticket` in Ticketing postman collection should increase saldo in accounting service - `Accounting / Get saldo`
+
+## Known issues
+
+* Consul not deregistering services
+
+## Missing features
+
+* RBAC
+* Mass Transactional Outbox
+* Unique constraints and indexes
+* Tenants
+* Paging
+* Cacheing
+* Concurrency
+
