@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace KingTransports.Data
 {
@@ -54,9 +55,12 @@ namespace KingTransports.Data
             },
         };
 
-
         public static async Task SeedUsers(IServiceProvider serviceProvider)
         {
+            using (var context = serviceProvider.GetRequiredService<ApplicationDbContext>())
+            {
+                context.Database.Migrate();
+            }
 
             using (UserManager<IdentityUser> _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>())
             using (RoleManager<IdentityRole> _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>())

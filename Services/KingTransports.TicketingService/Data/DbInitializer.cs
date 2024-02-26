@@ -74,8 +74,6 @@ public class DbInitializer
         };
 
         context.AddRange(tickets);
-
-
         context.SaveChanges();
     }
 }
