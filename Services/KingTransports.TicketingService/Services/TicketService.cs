@@ -87,6 +87,13 @@ namespace KingTransports.TicketingService.Services
             }
 
             await _ticketRepository.SetRefunded(ticket, true);
+            var ticketRefunded = new TicketRefunded()
+            {
+                TicketId = id,
+                Price = ticket.Price
+            };
+
+            await _publishEndpoint.Publish(ticketRefunded);
         }
     }
 }

@@ -30,7 +30,7 @@
 					"response": []
 				},
 				{
-					"name": "GetTicketbyId",
+					"name": "Get Ticket by Id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -102,11 +102,170 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Fleet",
+			"item": [
+				{
+					"name": "Get All Fleet Vehicles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5050/fleet/fleet",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"fleet",
+								"fleet"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Fleet vehicle",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5050/fleet/fleet/b4142c35-94ed-4150-832b-e90fb68a13d5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"fleet",
+								"fleet",
+								"b4142c35-94ed-4150-832b-e90fb68a13d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Fleet vehicle",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"vehicleVin\": \"4Y1SL65848Z411439\",\r\n        \"vehicleId\": \"2aa9a169-cd71-47c4-a1a2-0c79fd988b22\",\r\n        \"inServiceFrom\": \"2021-02-25T22:02:24.887675Z\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5050/fleet/fleet",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"fleet",
+								"fleet"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounting",
+			"item": [
+				{
+					"name": "Get All Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5050/accounting/transactions",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"accounting",
+								"transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5050/accounting/transactions/b4142c35-94ed-4150-832b-e90fb68a13d5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"accounting",
+								"transactions",
+								"b4142c35-94ed-4150-832b-e90fb68a13d5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get saldo",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"vehicleVin\": \"4Y1SL65848Z411439\",\r\n        \"vehicleId\": \"2aa9a169-cd71-47c4-a1a2-0c79fd988b22\",\r\n        \"inServiceFrom\": \"2021-02-25T22:02:24.887675Z\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5050/accounting/reports/saldo",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"accounting",
+								"reports",
+								"saldo"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
 		"type": "oauth2",
 		"oauth2": [
+			{
+				"key": "scope",
+				"value": "ticket.issue fleet.read fleet.create accounting.read",
+				"type": "string"
+			},
 			{
 				"key": "authUrl",
 				"value": "http://localhost:5050/auth/connect/authorize",
@@ -116,11 +275,6 @@
 				"key": "useBrowser",
 				"value": true,
 				"type": "boolean"
-			},
-			{
-				"key": "scope",
-				"value": "ticket.issue",
-				"type": "string"
 			},
 			{
 				"key": "clientId",

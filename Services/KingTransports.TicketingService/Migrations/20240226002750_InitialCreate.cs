@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TicketService.Migrations
+namespace KingTransports.TicketingService.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

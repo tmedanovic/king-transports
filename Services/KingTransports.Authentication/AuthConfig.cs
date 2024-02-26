@@ -20,6 +20,7 @@ namespace KingTransports.Auth
                     "ticket.issue",
                     "fleet.read",
                     "fleet.create",
+                    "accounting.read",
                     IdentityServerConstants.StandardScopes.OpenId,
                     IdentityServerConstants.StandardScopes.Profile,
                 },
@@ -54,6 +55,7 @@ namespace KingTransports.Auth
             new ApiScope(name: "ticket.issue",    displayName: "Issue ticket"),
             new ApiScope(name: "fleet.create",    displayName: "Create fleet vehicle"),
             new ApiScope(name: "fleet.read",    displayName: "Read fleet vehicle"),
+            new ApiScope(name: "accounting.read",    displayName: "Read fleet vehicle"),
         };
 
         public static IEnumerable<ApiResource> ApiResources => new ApiResource[]
@@ -63,9 +65,7 @@ namespace KingTransports.Auth
                 UserClaims = { "role" },
                 Scopes = { 
                     "ticket.validate", 
-                    "ticket.issue",
-                    "fleet.read",
-                    "fleet.create",
+                    "ticket.issue"
                 }
             },
              new ApiResource("fleet", "Fleet service")
@@ -74,6 +74,13 @@ namespace KingTransports.Auth
                 Scopes = {
                     "fleet.read",
                     "fleet.create",
+                }
+            },
+            new ApiResource("accounting", "Accounting service")
+            {
+                UserClaims = { "role" },
+                Scopes = {
+                    "accounting.read"
                 }
             }
         };

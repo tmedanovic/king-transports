@@ -23,6 +23,10 @@ public class DbInitializer
             return;
         }
 
+        //context.Tickets.ExecuteDelete();
+        //context.Routes.ExecuteDelete();
+        //context.Stations.ExecuteDelete();
+
         var stations = new List<Station>()
         {
            new Station
@@ -49,7 +53,8 @@ public class DbInitializer
             {
                 RouteId = Guid.Parse("97dcd61c-0714-4d52-91e2-1c6b3d05c676"),
                 StationFromId = Guid.Parse("dbd6dbac-c65b-4a98-844c-eda5357ee2a7"),
-                StationToId = Guid.Parse("f7f668fa-7f59-4820-ada0-b5575caa2233")
+                StationToId = Guid.Parse("f7f668fa-7f59-4820-ada0-b5575caa2233"),
+                DistanceKm = 12
             }
         };
 
@@ -64,7 +69,7 @@ public class DbInitializer
                 ValidFrom = DateTime.UtcNow,
                 ValidTo = DateTime.UtcNow.AddDays(1),
                 IssuedAt = DateTime.UtcNow,
-                Price = 10,
+                Price = 10
             }
         };
 

@@ -7,13 +7,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
-
 #nullable disable
 
-namespace TicketService.Migrations
+namespace KingTransports.TicketingService.Migrations
 {
     [DbContext(typeof(TicketDbContext))]
-    [Migration("20240224203330_InitialCreate")]
+    [Migration("20240226002750_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,7 +25,7 @@ namespace TicketService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("KingTask.DAL.Entities.Route", b =>
+            modelBuilder.Entity("KingTransports.TicketingService.Entities.Route", b =>
                 {
                     b.Property<Guid>("RouteId")
                         .ValueGeneratedOnAdd()
@@ -52,7 +51,7 @@ namespace TicketService.Migrations
                     b.ToTable("Routes");
                 });
 
-            modelBuilder.Entity("KingTask.DAL.Entities.Station", b =>
+            modelBuilder.Entity("KingTransports.TicketingService.Entities.Station", b =>
                 {
                     b.Property<Guid>("StationId")
                         .ValueGeneratedOnAdd()
@@ -69,7 +68,7 @@ namespace TicketService.Migrations
                     b.ToTable("Stations");
                 });
 
-            modelBuilder.Entity("KingTask.DAL.Entities.Ticket", b =>
+            modelBuilder.Entity("KingTransports.TicketingService.Entities.Ticket", b =>
                 {
                     b.Property<Guid>("TicketId")
                         .ValueGeneratedOnAdd()
@@ -267,15 +266,15 @@ namespace TicketService.Migrations
                     b.ToTable("OutboxState");
                 });
 
-            modelBuilder.Entity("KingTask.DAL.Entities.Route", b =>
+            modelBuilder.Entity("KingTransports.TicketingService.Entities.Route", b =>
                 {
-                    b.HasOne("KingTask.DAL.Entities.Station", "StationFrom")
+                    b.HasOne("KingTransports.TicketingService.Entities.Station", "StationFrom")
                         .WithMany()
                         .HasForeignKey("StationFromId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("KingTask.DAL.Entities.Station", "StationTo")
+                    b.HasOne("KingTransports.TicketingService.Entities.Station", "StationTo")
                         .WithMany()
                         .HasForeignKey("StationToId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,9 +285,9 @@ namespace TicketService.Migrations
                     b.Navigation("StationTo");
                 });
 
-            modelBuilder.Entity("KingTask.DAL.Entities.Ticket", b =>
+            modelBuilder.Entity("KingTransports.TicketingService.Entities.Ticket", b =>
                 {
-                    b.HasOne("KingTask.DAL.Entities.Route", "Route")
+                    b.HasOne("KingTransports.TicketingService.Entities.Route", "Route")
                         .WithMany()
                         .HasForeignKey("RouteId")
                         .OnDelete(DeleteBehavior.Cascade)

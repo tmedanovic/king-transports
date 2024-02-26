@@ -1,21 +1,24 @@
 ﻿using IdentityServer4.AccessTokenValidation;
 using KingTransports.Common.Filters;
 using KingTransports.TicketingService.Data;
-using KingTransports.TicketingService.Repositories;
-using KingTransports.TicketingService.Services;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using KingTransports.Common.Discovery;
 using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using KingTransports.TicketingService.Repositories;
+using KingTransports.TicketingService.Services;
+using KingTransports.AccountingService.Consumers;
+using KingTransports.AccountingService.Data;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
-    serverOptions.Listen(IPAddress.Any, 7001);
+    serverOptions.Listen(IPAddress.Any, 7003);
 });
 
 // Add services to the container.
@@ -28,7 +31,7 @@ builder.Services.AddLogging();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<TicketDbContext>(option =>
+builder.Services.AddDbContext<AccountingDbContext>(option =>
 {
     var conn = builder.Configuration.GetConnectionString("DefaultConnection");
     option.UseNpgsql(conn);
@@ -39,15 +42,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Configure RabbitMq
 builder.Services.AddMassTransit(x =>
 {
-    //x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
-    //{
-    //    o.QueryDelay = TimeSpan.FromSeconds(10);
-
-    //    o.UsePostgres();
-    //    o.UseBusOutbox();
-    //});
-
-    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
+    var entryAssembly = Assembly.GetExecutingAssembly();
+    x.AddConsumers(entryAssembly);
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -65,22 +61,16 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
         .AddIdentityServerAuthentication(options =>
         {
             options.Authority = "http://localhost:5050/auth";
-            options.ApiName = "ticketing";
+            options.ApiName = "accounting";
             options.RequireHttpsMetadata = false;
         });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("ticket.issue", policy =>
+    options.AddPolicy("accounting.read", policy =>
     {
         policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-        policy.RequireScope("ticket.issue");
-    });
-
-    options.AddPolicy("ticket.validate", policy =>
-    {
-        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-        policy.RequireScope("ticket.validate");
+        policy.RequireScope("accounting.read");
     });
 });
 
@@ -88,9 +78,8 @@ builder.Services.AddHealthChecks();
 
 // Add services to the container
 
-builder.Services.AddTransient<IRouteRepository, RouteRepository>();
-builder.Services.AddTransient<ITicketRepository, TicketRepository>();
-builder.Services.AddTransient<ITicketService, KingTransports.TicketingService.Services.TicketService>();
+builder.Services.AddTransient<ITransactionRepository, TransactionRepository>();
+builder.Services.AddTransient<ITransactionService, TransactionService>();
 
 builder.Services.RegisterConsulServices(builder.Configuration);
 

@@ -26,6 +26,15 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
       "UseServiceDiscovery": true,
       "RouteIsCaseSensitive": false
+    },
+    {
+      "Servicename": "accounting",
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "UpstreamPathTemplate": "/accounting/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UseServiceDiscovery": true,
+      "RouteIsCaseSensitive": false
     }
   ],
   "GlobalConfiguration": {
