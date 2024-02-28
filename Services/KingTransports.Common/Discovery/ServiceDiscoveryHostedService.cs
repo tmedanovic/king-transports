@@ -1,5 +1,6 @@
 ﻿using Consul;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace KingTransports.Common.Discovery
 {
@@ -7,22 +8,22 @@ namespace KingTransports.Common.Discovery
     {
         private readonly IConsulClient _consulClient;
         private readonly ServiceConfig _serviceConfig;
-        private string _registrationId = "";
+        private readonly ILogger<ServiceDiscoveryHostedService> _logger;
 
-        public ServiceDiscoveryHostedService(IConsulClient consulClient, ServiceConfig serviceConfig)
+        public ServiceDiscoveryHostedService(IConsulClient consulClient, ServiceConfig serviceConfig, ILogger<ServiceDiscoveryHostedService> logger)
         {
             _consulClient = consulClient;
             _serviceConfig = serviceConfig;
+            _logger = logger;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _registrationId = $"{_serviceConfig.ServiceName}_{Guid.NewGuid():D}";
             var hostname = "host.docker.internal";
 
             var registration = new AgentServiceRegistration
             {
-                ID = _registrationId,
+                ID = _serviceConfig.ServiceId,
                 Name = _serviceConfig.ServiceName,
                 Address = hostname,
                 Port = _serviceConfig.ServiceAddress.Port,
@@ -40,7 +41,10 @@ namespace KingTransports.Common.Discovery
 
         public async Task StopAsync(CancellationToken cancellationToken)
         {
-            await _consulClient.Agent.ServiceDeregister(_registrationId, cancellationToken);
+            var registration = new AgentServiceRegistration { ID = _serviceConfig.ServiceId };
+
+            _logger.LogInformation($"Deregistering service from Consul: {registration.ID}");
+            await _consulClient.Agent.ServiceDeregister(registration.ID, cancellationToken);
         }
     }
 }
