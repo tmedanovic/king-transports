@@ -69,12 +69,12 @@ Calling `Ticketing / Create Ticket` in Ticketing postman collection should incre
 
 ## Known issues
 
-* Consul not deregistering services
+* ~~Consul not deregistering services~~ (fixed in [49484ca](https://github.com/tmedanovic/king-transports/commit/49484cab1007555e43f39296d42855f0b2c0801f)
 
 ## Missing features
 
 * RBAC
-* MassTransit Transactional Outbox
+* ~~MassTransit Transactional Outbox~~ (fixed in [61d1c3b](https://github.com/tmedanovic/king-transports/commit/61d1c3b20a2efa4c9252409eb74b2bdb98236c0b)
 * Unique constraints and indexes
 * Tenants
 * Paging
