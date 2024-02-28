@@ -57,8 +57,6 @@ namespace KingTransports.FleetService.Services
                 throw new NotFound("vehicle_not_found");
             }
 
-            var utcNow = DateTime.UtcNow;
-
             var fleetVehicle = new FleetVehicle()
             {
                 FleetVehicleId = Guid.NewGuid(),
@@ -68,13 +66,11 @@ namespace KingTransports.FleetService.Services
                 VehicleOperabilityStatus = FleetVehicleOperabilityStatus.Operable,
             };
 
+            var fleetVehicleCreated = _mapper.Map<FleetVehicleCreated>(fleetVehicle);
+            await _publishEndpoint.Publish(fleetVehicleCreated);
             await _fleetVehicleRepository.CreateFleetVehicle(fleetVehicle);
 
             var newFleetVehicle = _mapper.Map<FleetVehicleDTO>(fleetVehicle);
-            var fleetVehicleCreated = _mapper.Map<FleetVehicleCreated>(newFleetVehicle);
-
-            await _publishEndpoint.Publish(fleetVehicleCreated);
-
             return newFleetVehicle;
         }
     }

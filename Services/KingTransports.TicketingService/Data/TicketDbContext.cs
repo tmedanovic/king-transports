@@ -17,7 +17,6 @@ namespace KingTransports.TicketingService.Data
         {
             base.OnModelCreating(builder);
 
-            // add in memory outbox https://masstransit.io/documentation/patterns/in-memory-outbox
             builder.AddInboxStateEntity();
             builder.AddOutboxMessageEntity();
             builder.AddOutboxStateEntity();

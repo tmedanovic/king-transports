@@ -67,13 +67,11 @@ namespace KingTransports.TicketingService.Services
             ticket.ValidTo = utcNow.AddDays(1);
             ticket.Price = (decimal)(route.DistanceKm * 0.5);
 
+            var ticketCreated = _mapper.Map<TicketCreated>(ticket);
+            await _publishEndpoint.Publish(ticketCreated);
             await _ticketRepository.CreateTicket(ticket);
 
             var newTicket = _mapper.Map<TicketDto>(ticket);
-            var ticketCreated = _mapper.Map<TicketCreated>(newTicket);
-
-            await _publishEndpoint.Publish(ticketCreated);
-
             return newTicket;
         }
 
@@ -86,7 +84,11 @@ namespace KingTransports.TicketingService.Services
                 throw new NotFound("ticket_not_found");
             }
 
-            await _ticketRepository.SetRefunded(ticket, true);
+            if (ticket.Refunded)
+            {
+                throw new InvalidRequest("ticket_already_refunded");
+            }
+
             var ticketRefunded = new TicketRefunded()
             {
                 TicketId = id,
@@ -94,6 +96,7 @@ namespace KingTransports.TicketingService.Services
             };
 
             await _publishEndpoint.Publish(ticketRefunded);
+            await _ticketRepository.SetRefunded(ticket, true);
         }
     }
 }

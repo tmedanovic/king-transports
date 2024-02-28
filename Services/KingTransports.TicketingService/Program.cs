@@ -39,13 +39,13 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Configure RabbitMq
 builder.Services.AddMassTransit(x =>
 {
-    //x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
-    //{
-    //    o.QueryDelay = TimeSpan.FromSeconds(10);
+    x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
+    {
+        o.QueryDelay = TimeSpan.FromSeconds(10);
 
-    //    o.UsePostgres();
-    //    o.UseBusOutbox();
-    //});
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
 
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
 

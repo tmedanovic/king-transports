@@ -39,20 +39,18 @@ builder.Services.AddDbContext<AccountingDbContext>(option =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Configure RabbitMq
 builder.Services.AddMassTransit(x =>
 {
-    var entryAssembly = Assembly.GetExecutingAssembly();
-    x.AddConsumers(entryAssembly);
+    x.AddConsumers(Assembly.GetExecutingAssembly());
 
     x.UsingRabbitMq((context, cfg) =>
     {
-
         cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
         {
             host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
             host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
         });
+
         cfg.ConfigureEndpoints(context);
     });
 });

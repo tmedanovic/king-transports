@@ -21,7 +21,7 @@ namespace KingTransports.Common.Filters
             {
                 if (context.Exception is NotFound)
                 {
-                    context.Result = context.Result = new ObjectResult(new
+                    context.Result = new ObjectResult(new
                     {
                         StatusCode = HttpStatusCode.NotFound,
                         Error = context.Exception.Message,
@@ -31,16 +31,25 @@ namespace KingTransports.Common.Filters
 
                 else if (context.Exception is ProcessingProblem)
                 {
-                    context.Result = context.Result = new ObjectResult(new
+                    context.Result = new ObjectResult(new
                     {
                         StatusCode = HttpStatusCode.InternalServerError,
                         Error = context.Exception.Message,
                         ErrorCode = context.Exception.Message
                     });
                 }
+                else if (context.Exception is InvalidRequest)
+                {
+                    context.Result = new ObjectResult(new
+                    {
+                        StatusCode = HttpStatusCode.BadRequest,
+                        Error = context.Exception.Message,
+                        ErrorCode = context.Exception.Message
+                    });
+                }
                 else
                 {
-                    context.Result = context.Result = new ObjectResult(new
+                    context.Result = new ObjectResult(new
                     {
                         StatusCode = HttpStatusCode.InternalServerError,
                         Error = "Something went wrong :(",

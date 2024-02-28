@@ -15,8 +15,7 @@ namespace KingTransports.TicketingService.Helpers
             CreateMap<Station, StationDto>();
             CreateMap<Route, TicketDto>();
             CreateMap<Station, RouteDto>();
-
-            CreateMap<TicketDto, TicketCreated>();
+            CreateMap<Ticket, TicketCreated>();
         }
     }
 }

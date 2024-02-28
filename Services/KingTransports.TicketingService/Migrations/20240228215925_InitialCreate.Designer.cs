@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KingTransports.TicketingService.Migrations
 {
     [DbContext(typeof(TicketDbContext))]
-    [Migration("20240226002750_InitialCreate")]
+    [Migration("20240228215925_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

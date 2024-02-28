@@ -13,7 +13,7 @@ namespace KingTransports.FleetService.Helpers
             CreateMap<FleetVehicle, FleetVehicleDTO>().IncludeMembers(x => x.Vehicle);
             CreateMap<FleetVehicleDTO, FleetVehicleCreated>().IncludeMembers(x => x.Vehicle);
             CreateMap<Vehicle, FleetVehicleDTO>();
-            CreateMap<VehicleDTO, FleetVehicleCreated>();
+            CreateMap<Vehicle, FleetVehicleCreated>();
         }
     }
 }

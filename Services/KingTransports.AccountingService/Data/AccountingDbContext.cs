@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using KingTransports.AccountingService.Entities;
+using MassTransit;
 
 namespace KingTransports.TicketingService.Data
 {
@@ -13,6 +14,9 @@ namespace KingTransports.TicketingService.Data
         {
             base.OnModelCreating(builder);
 
+            builder.AddInboxStateEntity();
+            builder.AddOutboxMessageEntity();
+            builder.AddOutboxStateEntity();
         }
     }
 }
