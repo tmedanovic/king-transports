@@ -10,8 +10,6 @@ namespace KingTransports.Common.Tests.Security;
 
 public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
 {
-    private const string SCOPE_CLAIM_TYPE = "http://schemas.microsoft.com/identity/claims/scope";
-
     [Theory]
     [InlineData(new string[] { "api.read" }, null, null, new string[] { "controlor" }, typeof(ForbidResult))]
     [InlineData(new string[] { "api.read" }, null, null, new string[] { "admin" }, typeof(ForbidResult))]
@@ -56,7 +54,10 @@ public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
 
         if(scopes != null)
         {
-            identity.AddClaim(new Claim(SCOPE_CLAIM_TYPE, string.Join(' ', scopes)));
+            foreach (var scope in scopes)
+            {
+                identity.AddClaim(new Claim("scope", scope));
+            }
         }
 
         if(roles != null)

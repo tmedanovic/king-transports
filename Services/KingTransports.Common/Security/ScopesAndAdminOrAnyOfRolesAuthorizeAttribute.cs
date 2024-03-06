@@ -7,14 +7,13 @@ namespace KingTransports.Common.Security
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ScopesAndAdminOrAnyOfRolesAuthorizeAttribute : Attribute, IAuthorizationFilter
     {
-        private const string SCOPE_CLAIM_TYPE = "http://schemas.microsoft.com/identity/claims/scope";
-        private readonly string[] _scopes;
-        private readonly string[] _roles;
+        public string[] Scopes;
+        private string[] Roles;
 
         public ScopesAndAdminOrAnyOfRolesAuthorizeAttribute(string[] scopes, string[] roles)
         {
-            _scopes = scopes;
-            _roles = roles;
+            Scopes = scopes;
+            Roles = roles;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
@@ -34,29 +33,30 @@ namespace KingTransports.Common.Security
                 return true;
             }
 
-            if (_roles == null)
+            if (Roles == null)
             {
                 return true;
             }
 
-            return _roles.Any(principal.IsInRole);
+            return Roles.Any(principal.IsInRole);
         }
 
         private bool HasAllScopes(ClaimsPrincipal principal)
         {
-            if (_scopes == null)
+            if (Scopes == null)
             {
                 return true;
             }
 
-            var claim = principal.FindFirst(SCOPE_CLAIM_TYPE);
+            var userScopeClaims = principal.FindAll("scope");
 
-            if (claim == null)
+            if (userScopeClaims == null || userScopeClaims.Count() == 0)
             {
                 return false;
             }
 
-            return !_scopes.Except(claim.Value.Split(' ')).Any();
+            var userScopes = userScopeClaims.Select(x => x.Value).ToArray();
+            return !Scopes.Except(userScopes).Any();
         }
     }
 }
