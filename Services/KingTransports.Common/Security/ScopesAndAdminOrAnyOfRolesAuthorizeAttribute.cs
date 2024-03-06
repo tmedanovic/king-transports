@@ -7,12 +7,23 @@ namespace KingTransports.Common.Security
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class ScopesAndAdminOrAnyOfRolesAuthorizeAttribute : Attribute, IAuthorizationFilter
     {
-        public string[] Scopes;
-        private string[] Roles;
+        public string Scopes;
+        public string Roles;
 
-        public ScopesAndAdminOrAnyOfRolesAuthorizeAttribute(string[] scopes, string[] roles)
+        private string[] _scopes;
+        private string[] _roles;
+
+        public ScopesAndAdminOrAnyOfRolesAuthorizeAttribute()
+        {
+        }
+
+        public ScopesAndAdminOrAnyOfRolesAuthorizeAttribute(string scopes)
         {
             Scopes = scopes;
+        }
+
+        public ScopesAndAdminOrAnyOfRolesAuthorizeAttribute(string scopes, string roles) : this(scopes)
+        {
             Roles = roles;
         }
 
@@ -27,7 +38,7 @@ namespace KingTransports.Common.Security
         }
 
         private bool HasAnyRole(ClaimsPrincipal principal)
-        {
+        {         
             if (principal.IsInRole("admin"))
             {
                 return true;
@@ -38,7 +49,13 @@ namespace KingTransports.Common.Security
                 return true;
             }
 
-            return Roles.Any(principal.IsInRole);
+            // lets lazy split, do it only the first time and only when called
+            if (_roles == null)
+            {
+                _roles = Roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            }
+        
+            return _roles.Any(principal.IsInRole);
         }
 
         private bool HasAllScopes(ClaimsPrincipal principal)
@@ -50,13 +67,20 @@ namespace KingTransports.Common.Security
 
             var userScopeClaims = principal.FindAll("scope");
 
-            if (userScopeClaims == null || userScopeClaims.Count() == 0)
+            if (userScopeClaims == null || !userScopeClaims.Any())
             {
                 return false;
             }
 
             var userScopes = userScopeClaims.Select(x => x.Value).ToArray();
-            return !Scopes.Except(userScopes).Any();
+
+            // lets lazy split, do it only the first time and only when called
+            if (_scopes == null)
+            {
+                _scopes = Scopes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            }
+
+            return !_scopes.Except(userScopes).Any();
         }
     }
 }

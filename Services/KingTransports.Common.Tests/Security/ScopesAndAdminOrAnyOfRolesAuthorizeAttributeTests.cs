@@ -11,13 +11,13 @@ namespace KingTransports.Common.Tests.Security;
 public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
 {
     [Theory]
-    [InlineData(new string[] { "api.read" }, null, null, new string[] { "controlor" }, typeof(ForbidResult))]
-    [InlineData(new string[] { "api.read" }, null, null, new string[] { "admin" }, typeof(ForbidResult))]
-    [InlineData(new string[] { "api.read", "api.write" }, null, new string[] { "api.read" }, new string[] { "admin" }, typeof(ForbidResult))]
-    [InlineData(new string[] { "api.read" }, new string[] { "controlor" }, new string[] { "api.read" }, new string[] { "ticket-seller" }, typeof(ForbidResult))]
-    [InlineData(new string[] { "api.read" }, new string[] { "controlor" }, new string[] { "api.read" }, new string[] { "ticket-seller", "controlor" }, null)]
-    [InlineData(null, null, null, new string[] { "admin" }, null)]
-    public void ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTestCases(string[] allowedScopes, string[] allowedRoles, string[] userScopes, string[] userRoles, Type result)
+    [InlineData("api.read", null, null, "controlor", typeof(ForbidResult))]
+    [InlineData("api.read", null, null, "admin", typeof(ForbidResult))]
+    [InlineData("api.read, api.write", null, "api.read", "admin", typeof(ForbidResult))]
+    [InlineData("api.read", "controlor", "api.read", "ticket-seller", typeof(ForbidResult))]
+    [InlineData("api.read", "controlor", "api.read", "ticket-seller, controlor", null)]
+    [InlineData(null, null, null, "admin", null)]
+    public void ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTestCases(string allowedScopes, string allowedRoles, string userScopes, string userRoles, Type result)
     {
         //var filter = new AuthorizationFilterContext(fakeActionContext, new List<IFilterMetadata>() { });
         var filter = new ScopesAndAdminOrAnyOfRolesAuthorizeAttribute(allowedScopes, allowedRoles);
@@ -46,7 +46,7 @@ public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
         return new AuthorizationFilterContext(fakeActionContext, new List<IFilterMetadata>());
     }
 
-    private ClaimsPrincipal GetTestUser(string[] scopes, string[] roles)
+    private ClaimsPrincipal GetTestUser(string scopes, string roles)
     {
         var identity = new ClaimsIdentity(new[] {
             new Claim(ClaimTypes.Name, "Test User")
@@ -54,7 +54,8 @@ public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
 
         if(scopes != null)
         {
-            foreach (var scope in scopes)
+            var _scopes = scopes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var scope in _scopes)
             {
                 identity.AddClaim(new Claim("scope", scope));
             }
@@ -62,7 +63,8 @@ public class ScopesAndAdminOrAnyOfRolesAuthorizeAttributeTests
 
         if(roles != null)
         {
-            foreach(var role in roles)
+            var _roles = roles.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            foreach (var role in _roles)
             {
                 identity.AddClaim(new Claim(ClaimTypes.Role, role));
             }

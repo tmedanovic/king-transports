@@ -17,7 +17,7 @@ namespace KingTransports.TicketingService.Controllers
         }
 
         [HttpGet]
-        [ScopesAndAdminOrAnyOfRolesAuthorize(new[] { "ticket.validate" }, new [] { "conductor", "ticket-seller" })]
+        [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate",  Roles = "conductor, ticket-seller")]
         public async Task<ActionResult<List<TicketDto>>> GetAllTickets()
         {
             var tickets = await _ticketService.GetAllTickets();
@@ -25,7 +25,7 @@ namespace KingTransports.TicketingService.Controllers
         }
 
         [HttpGet("{id}")]
-        [ScopesAndAdminOrAnyOfRolesAuthorize(new[] { "ticket.validate" }, new[] { "conductor", "ticket-seller" })]
+        [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "conductor, ticket-seller")]
         public async Task<ActionResult<TicketDto>> GetTicketById(Guid id)
         {
             var ticket = await _ticketService.GetTicketById(id);
@@ -33,7 +33,7 @@ namespace KingTransports.TicketingService.Controllers
         }
 
         [HttpPost]
-        [ScopesAndAdminOrAnyOfRolesAuthorize(new[] { "ticket.issue" }, new[] { "ticket-seller" })]
+        [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "ticket-seller")]
         public async Task<ActionResult<TicketDto>> CreateTicket(CreateTicketDto createTicketDto)
         {
             var ticket = await _ticketService.CreateTicket(createTicketDto);
