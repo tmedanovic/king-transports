@@ -15,7 +15,6 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
     serverOptions.Listen(IPAddress.Any, 7003);
@@ -24,6 +23,7 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 // Add services to the container.
 builder.Services.AddControllers(config =>
 {
+    config.Filters.Add(typeof(ValidationFilter));
     config.Filters.Add(typeof(ErrorHandlingFilter));
 });
 

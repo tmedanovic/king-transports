@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
     serverOptions.Listen(IPAddress.Any, 7001);
@@ -21,6 +20,7 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 // Add services to the container.
 builder.Services.AddControllers(config =>
 {
+    config.Filters.Add(typeof(ValidationFilter));
     config.Filters.Add(typeof(ErrorHandlingFilter));
 });
 
@@ -90,7 +90,7 @@ builder.Services.AddHealthChecks();
 
 builder.Services.AddTransient<IRouteRepository, RouteRepository>();
 builder.Services.AddTransient<ITicketRepository, TicketRepository>();
-builder.Services.AddTransient<ITicketService, KingTransports.TicketingService.Services.TicketService>();
+builder.Services.AddTransient<ITicketService, TicketService>();
 
 builder.Services.RegisterConsulServices(builder.Configuration);
 
