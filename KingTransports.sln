@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.FleetService
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KingTransports.AccountingService", "Services\KingTransports.AccountingService\KingTransports.AccountingService.csproj", "{E0AE7120-56FF-41E8-AF14-B4FAC9C6097F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KingTransports.Common.Tests", "Services\KingTransports.Common.Tests\KingTransports.Common.Tests.csproj", "{0BFB5F7F-A864-4748-8CF7-F6153D33F150}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{E0AE7120-56FF-41E8-AF14-B4FAC9C6097F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0AE7120-56FF-41E8-AF14-B4FAC9C6097F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0AE7120-56FF-41E8-AF14-B4FAC9C6097F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BFB5F7F-A864-4748-8CF7-F6153D33F150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BFB5F7F-A864-4748-8CF7-F6153D33F150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BFB5F7F-A864-4748-8CF7-F6153D33F150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BFB5F7F-A864-4748-8CF7-F6153D33F150}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
