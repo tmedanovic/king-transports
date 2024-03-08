@@ -1,12 +1,13 @@
-﻿using KingTransports.TicketingService.DTOs;
+﻿using KingTransports.Common.Collections;
+using KingTransports.TicketingService.DTOs;
 
 namespace KingTransports.TicketingService.Services
 {
     public interface ITicketService
     {
-        Task<TicketDto> CreateTicket(CreateTicketDto createTicketDto);
-        Task<List<TicketDto>> GetAllTickets();
-        Task<TicketDto> GetTicketById(Guid id);
-        Task RefundTicket(Guid id);
+        Task<TicketDto> CreateTicketAsync(CreateTicketDto createTicketDto);
+        Task<PagedList<TicketDto>> GetAllTicketsAsync(int page = 1);
+        Task<TicketDto> GetTicketByIdAsync(Guid id);
+        Task RefundTicketAsync(Guid id);
     }
 }

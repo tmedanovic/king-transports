@@ -2,10 +2,10 @@
 using KingTransports.TicketingService.DTOs;
 using KingTransports.TicketingService.Repositories;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using KingTransports.Common.Errors;
 using KingTransports.TicketingService.Entities;
 using KingTransports.Common.Events;
+using KingTransports.Common.Collections;
 
 namespace KingTransports.TicketingService.Services
 {
@@ -27,16 +27,18 @@ namespace KingTransports.TicketingService.Services
             _routeRepository = routeRepository;
         }
 
-        public async Task<List<TicketDto>> GetAllTickets()
+        public async Task<PagedList<TicketDto>> GetAllTicketsAsync(int page = 1)
         {
-            var tickets = await _ticketRepository.GetAllTicketsWithCildren()
-            .OrderByDescending(x => x.IssuedAt)
-            .ToListAsync();
+            var query = _ticketRepository.GetAllTicketsWithCildren()
+            .OrderByDescending(x => x.IssuedAt);
 
-            return _mapper.Map<List<TicketDto>>(tickets);
+            var mapped = _mapper.ProjectTo<TicketDto>(query);
+            var pagedList = await PagedList<TicketDto>.ToPagedListAsync(mapped, page);
+
+            return pagedList;
         }
 
-        public async Task<TicketDto> GetTicketById(Guid id)
+        public async Task<TicketDto> GetTicketByIdAsync(Guid id)
         {
             var foundTicket = await _ticketRepository.GetTicketWithCildrenById(id);
 
@@ -48,7 +50,7 @@ namespace KingTransports.TicketingService.Services
             return _mapper.Map<TicketDto>(foundTicket);
         }
 
-        public async Task<TicketDto> CreateTicket(CreateTicketDto createTicketDto)
+        public async Task<TicketDto> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
             var route = await _routeRepository.GetRouteById(createTicketDto.RouteId);
 
@@ -75,7 +77,7 @@ namespace KingTransports.TicketingService.Services
             return newTicket;
         }
 
-        public async Task RefundTicket(Guid id)
+        public async Task RefundTicketAsync(Guid id)
         {
             var ticket = await _ticketRepository.GetTicketById(id);
 
