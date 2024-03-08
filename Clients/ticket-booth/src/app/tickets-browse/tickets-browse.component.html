@@ -22,11 +22,10 @@
 	</tbody>
 </table>
 @if(pagination) {
-    <div class="d-flex justify-content-between p-2">
-        <ngb-pagination [collectionSize]="pagination.totalItems" 
-                        [(page)]="currentPage" 
-                        [pageSize]="pagination.itemsPerPage"
-                        (pageChange)="loadTicketsPage(currentPage)">
-        </ngb-pagination>
-    </div>
+    <ngb-pagination class="d-flex justify-content-center"
+                    [collectionSize]="pagination.totalItems" 
+                    [(page)]="currentPage" 
+                    [pageSize]="pagination.itemsPerPage"
+                    (pageChange)="loadTicketsPage(currentPage)">
+    </ngb-pagination>
 }

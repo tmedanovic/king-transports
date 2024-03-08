@@ -35,4 +35,8 @@ export class AppComponent {
         }
       });
   }
+
+  public logout() {
+    this.oidcSecurityService.logoff();
+  }
 }

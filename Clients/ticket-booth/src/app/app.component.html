@@ -24,7 +24,7 @@
                 {{ userData.userData.name }}
               </button>
               <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-dark">
-                <li><a ngbDropdownItem class="dropdown-item" href="#">Logout</a></li>
+                <li><a ngbDropdownItem (click)="logout" class="dropdown-item" href="#">Logout</a></li>
               </ul>
             </li>
           </ul>
