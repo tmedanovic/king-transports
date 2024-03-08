@@ -34,6 +34,14 @@ builder.Services.AddIdentityServer()
  .AddDeveloperSigningCredential()
  .AddAspNetIdentity<IdentityUser>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(builder =>
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader());
+});
+
 builder.Services.AddAuthentication();
 builder.Services.AddHealthChecks();
 builder.Services.RegisterConsulServices(builder.Configuration);

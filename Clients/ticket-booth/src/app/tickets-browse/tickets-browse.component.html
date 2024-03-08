@@ -1,0 +1,20 @@
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th scope="col">Ticket #</th>
+			<th scope="col">From</th>
+			<th scope="col">To</th>
+			<th scope="col">Price</th>
+		</tr>
+	</thead>
+	<tbody>
+		@for (ticket of tickets; track ticket.ticketId; let i = $index) {
+			<tr>
+				<td>{{ ticket.ticketId }}</td>
+				<td>{{ ticket.route.stationFrom.stationName }}</td>
+				<td>{{ ticket.route.stationTo.stationName }}</td>
+				<td>{{ ticket.price }}</td>
+			</tr>
+		}
+	</tbody>
+</table>

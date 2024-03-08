@@ -7,6 +7,29 @@ namespace KingTransports.Auth
     {
         public static IEnumerable<Client> Clients => new Client[]
         {
+             new Client()
+            {
+                ClientId = "ticket-booth-spa",
+                AllowedGrantTypes = GrantTypes.Code,
+                RequirePkce = true,
+                RequireClientSecret = false,
+                RedirectUris = { "http://localhost:4200"  },
+                AllowedScopes =
+                {
+                    "ticket.validate",
+                    "ticket.issue",
+                    IdentityServerConstants.StandardScopes.OpenId,
+                    IdentityServerConstants.StandardScopes.Profile,
+                    IdentityServerConstants.StandardScopes.OfflineAccess
+                },
+                AllowAccessTokensViaBrowser = true,
+                AllowOfflineAccess = true,
+                RequireConsent = false,
+                AllowedCorsOrigins = new string[]
+                {
+                    "http://localhost:4200"
+                }
+            },
             new Client()
             {
                 ClientId = "postman-backoffice-spa",

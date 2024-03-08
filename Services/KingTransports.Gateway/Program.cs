@@ -13,11 +13,20 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 var configuration = builder.Configuration.SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("ocelot.json", false).Build();
 
+
 //Ocelot
 builder.Services.AddOcelot(configuration).AddConsul();
+builder.Services.AddCors();
 
 builder.Logging.AddConsole();
 var app = builder.Build();
+
+app.UseCors(b => b
+          .WithOrigins("http://localhost:4200")
+          .AllowAnyMethod()
+          .AllowAnyHeader()
+          .AllowCredentials()
+);
 
 app.UseOcelot().Wait();
 
