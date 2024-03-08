@@ -1,19 +1,20 @@
 import { AsyncPipe } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NgbDropdown, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet, AsyncPipe, NgbDropdownModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
   
-  title = 'ticket-booth';
-  userData$;
+  public userData$;
+  public isAuthenticated: boolean = false;
 
   constructor(public oidcSecurityService: OidcSecurityService) {
     this.userData$ = this.oidcSecurityService.userData$;
@@ -26,11 +27,12 @@ export class AppComponent {
     this.oidcSecurityService
       .checkAuth()
       .subscribe((loginResponse: LoginResponse) => {
-        const { isAuthenticated, userData, accessToken, idToken, configId } =
-          loginResponse;
 
-          if(!loginResponse.isAuthenticated)
+        this.isAuthenticated = loginResponse.isAuthenticated;
+
+        if(!this.isAuthenticated) {
           this.oidcSecurityService.authorize();
+        }
       });
   }
 }
