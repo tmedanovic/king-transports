@@ -1,6 +1,7 @@
 using AutoMapper;
 using KingTransports.AccountingService.DTOs;
 using KingTransports.AccountingService.Entities;
+using KingTransports.Common.Events;
 
 namespace KingTransports.TicketingService.Helpers
 {
@@ -9,6 +10,7 @@ namespace KingTransports.TicketingService.Helpers
         public ProfileMapper()
         {
             CreateMap<Transaction, TransactionDTO>();
+            CreateMap<TransactionDTO, TransactionCreated>();
         }
     }
 }
