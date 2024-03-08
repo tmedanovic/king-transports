@@ -20,6 +20,8 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 // Add services to the container.
 builder.Services.AddControllers(config =>
 {
+    config.SuppressAsyncSuffixInActionNames = false;
+
     config.Filters.Add(typeof(ValidationFilter));
     config.Filters.Add(typeof(ErrorHandlingFilter));
 });

@@ -20,6 +20,8 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 // Add services to the container.
 builder.Services.AddControllers(config =>
 {
+    config.SuppressAsyncSuffixInActionNames = false;
+
     config.Filters.Add(typeof(ValidationFilter));
     config.Filters.Add(typeof(ErrorHandlingFilter));
 });
@@ -76,21 +78,6 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
             options.ApiName = "ticketing";
             options.RequireHttpsMetadata = false;
         });
-
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("ticket.issue", policy =>
-    {
-        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-        policy.RequireScope("ticket.issue");
-    });
-
-    options.AddPolicy("ticket.validate", policy =>
-    {
-        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-        policy.RequireScope("ticket.validate");
-    });
-});
 
 builder.Services.AddHealthChecks();
 
