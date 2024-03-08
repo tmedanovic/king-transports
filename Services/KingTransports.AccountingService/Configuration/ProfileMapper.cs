@@ -3,7 +3,7 @@ using KingTransports.AccountingService.DTOs;
 using KingTransports.AccountingService.Entities;
 using KingTransports.Common.Events;
 
-namespace KingTransports.TicketingService.Helpers
+namespace KingTransports.AccountingService.Configuration
 {
     public class ProfileMapper : Profile
     {

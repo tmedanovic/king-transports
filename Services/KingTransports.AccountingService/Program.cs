@@ -9,7 +9,6 @@ using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using KingTransports.TicketingService.Repositories;
 using KingTransports.TicketingService.Services;
-using KingTransports.AccountingService.Consumers;
 using KingTransports.AccountingService.Data;
 using System.Reflection;
 

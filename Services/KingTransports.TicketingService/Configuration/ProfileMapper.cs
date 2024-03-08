@@ -4,7 +4,7 @@ using KingTransports.TicketingService.DTOs;
 using KingTransports.TicketingService.Entities;
 using Route = KingTransports.TicketingService.Entities.Route;
 
-namespace KingTransports.TicketingService.Helpers
+namespace KingTransports.TicketingService.Configuration
 {
     public class ProfileMapper : Profile
     {

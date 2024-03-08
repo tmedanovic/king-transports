@@ -3,7 +3,7 @@ using KingTransports.Common.Events;
 using KingTransports.FleetService.DTOs;
 using KingTransports.FleetService.Entities;
 
-namespace KingTransports.FleetService.Helpers
+namespace KingTransports.FleetService.Configuration
 {
     public class ProfileMapper : Profile
     {
