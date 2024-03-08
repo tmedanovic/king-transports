@@ -10,18 +10,22 @@
 	</thead>
 	<tbody>
 		@for (ticket of tickets; track ticket.ticketId; let i = $index) {
-			<tr [ngClass]="{'table-danger' : ticket.refunded}">
+			<tr>
 				<td>{{ ticket.ticketId }}</td>
 				<td>{{ ticket.route.stationFrom.stationName }}</td>
 				<td>{{ ticket.route.stationTo.stationName }}</td>
 				<td>{{ ticket.price | currency }}</td>
                 <td>{{ ticket.issuedAt | date }}</td>
-                <td><button [disabled]="ticket.refunded" (click)="refundTicket(ticket)" type="button" class="btn btn-primary btn-sm">Refund</button></td>
+                @if (!ticket.refunded) {
+                    <td><button (click)="refundTicket(ticket)" type="button" class="btn btn-primary btn-sm">Refund</button></td>
+                } @else {
+                    <td><button type="button" class="btn btn-outline-danger btn-sm" disabled>Refunded</button></td>
+                }
 			</tr>
 		}
 	</tbody>
 </table>
-@if(pagination) {
+@if (pagination) {
     <ngb-pagination class="d-flex justify-content-center"
                     [collectionSize]="pagination.totalItems" 
                     [(page)]="currentPage" 
