@@ -10,7 +10,7 @@
 			"name": "Ticketing",
 			"item": [
 				{
-					"name": "Get All tickets",
+					"name": "Get All Tickets",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -30,12 +30,38 @@
 					"response": []
 				},
 				{
+					"name": "Get All Tickets Page 2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5050/ticketing/tickets?page=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5050",
+							"path": [
+								"ticketing",
+								"tickets"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get Ticket by Id",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:5050/ticketing/tickets/4f84be25-3f3d-43c5-8010-8da5d7add568",
+							"raw": "http://localhost:5050/ticketing/tickets/81ed6ad5-d618-4458-b163-50b17031e8b6",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -44,7 +70,7 @@
 							"path": [
 								"ticketing",
 								"tickets",
-								"4f84be25-3f3d-43c5-8010-8da5d7add568"
+								"81ed6ad5-d618-4458-b163-50b17031e8b6"
 							]
 						}
 					},
