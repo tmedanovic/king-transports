@@ -23,6 +23,6 @@ public class TicketRefundedConsumer : IConsumer<TicketRefunded>
             CreatedAt = DateTime.UtcNow
         };
 
-        await _transactionService.CreateTransaction(transaction);
+        await _transactionService.CreateTransactionAsync(transaction);
     }
 }

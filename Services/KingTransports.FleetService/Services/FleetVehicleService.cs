@@ -27,7 +27,7 @@ namespace KingTransports.FleetService.Services
             _fleetVehicleRepository = fleetVehicleRepository;
         }
 
-        public async Task<List<FleetVehicleDTO>> GetAllFleetVehicles()
+        public async Task<List<FleetVehicleDTO>> GetAllFleetVehiclesAsync()
         {
             var fleetVehicles = await _fleetVehicleRepository.GetAllFleetVehicleWithCildren()
             .OrderByDescending(x => x.InServiceFrom)
@@ -36,7 +36,7 @@ namespace KingTransports.FleetService.Services
             return _mapper.Map<List<FleetVehicleDTO>>(fleetVehicles);
         }
 
-        public async Task<FleetVehicleDTO> GetFleetVehicleById(Guid id)
+        public async Task<FleetVehicleDTO> GetFleetVehicleByIdAsync(Guid id)
         {
             var fleetVehicle = await _fleetVehicleRepository.GetFleetVehicleWithCildrenById(id);
 
@@ -48,7 +48,7 @@ namespace KingTransports.FleetService.Services
             return _mapper.Map<FleetVehicleDTO>(fleetVehicle);
         }
 
-        public async Task<FleetVehicleDTO> CreateFleetVehicle(CreateFleetVehicleDTO createFleetVehicleDTO)
+        public async Task<FleetVehicleDTO> CreateFleetVehicleAsync(CreateFleetVehicleDTO createFleetVehicleDTO)
         {
             var vehicle = await _vehicleRepository.GetVehicleById(createFleetVehicleDTO.VehicleId);
 

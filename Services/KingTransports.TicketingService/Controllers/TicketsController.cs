@@ -19,7 +19,7 @@ namespace KingTransports.TicketingService.Controllers
 
         [HttpGet]
         [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "conductor, ticket-seller")]
-        public async Task<ActionResult<List<TicketDto>>> GetAllTickets([FromQuery] int page = 1)
+        public async Task<ActionResult<List<TicketDto>>> GetAllTicketsAsync([FromQuery] int page = 1)
         {
             var pagedList = await _ticketService.GetAllTicketsAsync(page);
             return this.OkPaged(pagedList);
@@ -27,7 +27,7 @@ namespace KingTransports.TicketingService.Controllers
 
         [HttpGet("{id}")]
         [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "conductor, ticket-seller")]
-        public async Task<ActionResult<TicketDto>> GetTicketById(Guid id)
+        public async Task<ActionResult<TicketDto>> GetTicketByIdAsync(Guid id)
         {
             var ticket = await _ticketService.GetTicketByIdAsync(id);
             return ticket;
@@ -35,14 +35,14 @@ namespace KingTransports.TicketingService.Controllers
 
         [HttpPost]
         [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "ticket-seller")]
-        public async Task<ActionResult<TicketDto>> CreateTicket(CreateTicketDto createTicketDto)
+        public async Task<ActionResult<TicketDto>> CreateTicketAsync(CreateTicketDto createTicketDto)
         {
             var ticket = await _ticketService.CreateTicketAsync(createTicketDto);
-            return CreatedAtAction(nameof(GetTicketById), new { id = ticket.TicketId }, ticket);
+            return CreatedAtAction(nameof(GetTicketByIdAsync), new { id = ticket.TicketId }, ticket);
         }
 
         [HttpPost("{id}/refund")]
-        public async Task<ActionResult> RefundTicket([FromRoute] Guid id)
+        public async Task<ActionResult> RefundTicketAsync([FromRoute] Guid id)
         {
             await _ticketService.RefundTicketAsync(id);
             return Ok();

@@ -24,7 +24,7 @@ namespace KingTransports.TicketingService.Services
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<List<TransactionDTO>> GetAllTransactions()
+        public async Task<List<TransactionDTO>> GetAllTransactionsAsync()
         {
             var transactions = await _transactionRepository.GetAllTransactions()
             .OrderByDescending(x => x.CreatedAt)
@@ -33,7 +33,7 @@ namespace KingTransports.TicketingService.Services
             return _mapper.Map<List<TransactionDTO>>(transactions);
         }
 
-        public async Task<TransactionDTO> GetTransactionById(Guid id)
+        public async Task<TransactionDTO> GetTransactionByIdAsync(Guid id)
         {
             var transaction = await _transactionRepository.GetTransactionById(id);
 
@@ -45,7 +45,7 @@ namespace KingTransports.TicketingService.Services
             return _mapper.Map<TransactionDTO>(transaction);
         }
 
-        public async Task<TransactionDTO> CreateTransaction(CreateTransactionDTO createTransactionDTO)
+        public async Task<TransactionDTO> CreateTransactionAsync(CreateTransactionDTO createTransactionDTO)
         {
             Transaction transaction = new Transaction();
             transaction.Transactionid = Guid.NewGuid();

@@ -23,6 +23,6 @@ public class TicketCreatedConsumer : IConsumer<TicketCreated>
             CreatedAt = ticketCreated.Message.IssuedAt
         };
 
-        await _transactionService.CreateTransaction(transaction);
+        await _transactionService.CreateTransactionAsync(transaction);
     }
 }

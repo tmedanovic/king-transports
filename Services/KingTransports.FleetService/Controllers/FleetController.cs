@@ -18,26 +18,26 @@ namespace KingTransports.FleetService.Controllers
 
         [HttpGet]
         [Authorize(Policy = "fleet.read")]
-        public async Task<ActionResult<List<FleetVehicleDTO>>> GetAllFleetVehicles()
+        public async Task<ActionResult<List<FleetVehicleDTO>>> GetAllFleetVehiclesAsync()
         {
-            var fleetVehicles = await _fleetVehicleService.GetAllFleetVehicles();
+            var fleetVehicles = await _fleetVehicleService.GetAllFleetVehiclesAsync();
             return fleetVehicles;
         }
 
         [HttpGet("{id}")]
         [Authorize(Policy = "fleet.read")]
-        public async Task<ActionResult<FleetVehicleDTO>> GetFleetVehicleById(Guid id)
+        public async Task<ActionResult<FleetVehicleDTO>> GetFleetVehicleByIdAsync(Guid id)
         {
-            var fleetVehicle = await _fleetVehicleService.GetFleetVehicleById(id);
+            var fleetVehicle = await _fleetVehicleService.GetFleetVehicleByIdAsync(id);
             return fleetVehicle;
         }
 
         [HttpPost]
         [Authorize(Policy = "fleet.create")]
-        public async Task<ActionResult<FleetVehicleDTO>> CreateFleetVehicle(CreateFleetVehicleDTO createFleetVehicleDTO)
+        public async Task<ActionResult<FleetVehicleDTO>> CreateFleetVehicleAsync(CreateFleetVehicleDTO createFleetVehicleDTO)
         {
-            var fleetVehicle = await _fleetVehicleService.CreateFleetVehicle(createFleetVehicleDTO);
-            return CreatedAtAction(nameof(GetFleetVehicleById), new { id = fleetVehicle.FleetVehicleId }, fleetVehicle);
+            var fleetVehicle = await _fleetVehicleService.CreateFleetVehicleAsync(createFleetVehicleDTO);
+            return CreatedAtAction(nameof(GetFleetVehicleByIdAsync), new { id = fleetVehicle.FleetVehicleId }, fleetVehicle);
         }
     }
 }

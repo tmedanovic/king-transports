@@ -18,17 +18,17 @@ namespace KingTransports.TicketingService.Controllers
 
         [HttpGet]
         [Authorize(Policy = "accounting.read")]
-        public async Task<ActionResult<List<TransactionDTO>>> GetAllTransactions()
+        public async Task<ActionResult<List<TransactionDTO>>> GetAllTransactionsAsync()
         {
-            var tickets = await _transactionService.GetAllTransactions();
+            var tickets = await _transactionService.GetAllTransactionsAsync();
             return tickets;
         }
 
         [HttpGet("{id}")]
         [Authorize(Policy = "accounting.read")]
-        public async Task<ActionResult<TransactionDTO>> GetTransactionById(Guid id)
+        public async Task<ActionResult<TransactionDTO>> GetTransactionByIdAsync(Guid id)
         {
-            var ticket = await _transactionService.GetTransactionById(id);
+            var ticket = await _transactionService.GetTransactionByIdAsync(id);
             return ticket;
         }
     }

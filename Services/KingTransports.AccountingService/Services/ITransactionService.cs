@@ -4,9 +4,9 @@ namespace KingTransports.TicketingService.Services
 {
     public interface ITransactionService
     {
-        Task<TransactionDTO> CreateTransaction(CreateTransactionDTO createTransactionDTO);
-        Task<List<TransactionDTO>> GetAllTransactions();
-        Task<TransactionDTO> GetTransactionById(Guid id);
+        Task<TransactionDTO> CreateTransactionAsync(CreateTransactionDTO createTransactionDTO);
+        Task<List<TransactionDTO>> GetAllTransactionsAsync();
+        Task<TransactionDTO> GetTransactionByIdAsync(Guid id);
         decimal GetSaldo();
     }
 }
