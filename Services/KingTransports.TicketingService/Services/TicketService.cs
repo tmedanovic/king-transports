@@ -73,8 +73,9 @@ namespace KingTransports.TicketingService.Services
             await _publishEndpoint.Publish(ticketCreated);
             await _ticketRepository.CreateTicket(ticket);
 
-            var newTicket = _mapper.Map<TicketDto>(ticket);
-            return newTicket;
+            var newTicket = await _ticketRepository.GetTicketWithCildrenById(ticket.TicketId);
+            var newTicketDto = _mapper.Map<TicketDto>(newTicket);
+            return newTicketDto;
         }
 
         public async Task RefundTicketAsync(Guid id)
