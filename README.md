@@ -8,7 +8,8 @@ KingTrasports is a simple example of a event-driven microservices arhitecture wr
 - API Gateway (Ocelot) with Consul service discovery
 - Communication with MassTransit using RabbitMQ as message broker
 - Entity framework code-first using PostgreSQL
-- Global error handling and logging filter
+- Global error handling, validation and logging filter
+- Angular 17 and postman collection for consuming services
 
 ## Running the project
 
@@ -18,21 +19,7 @@ KingTransports requires Docker and Docker compose for running PostgreSQL, Rabbit
 docker-compose -f docker-compose.yml up
 ```
 
-## Consuming service
-
-You can consume service by importing `King transports.postman_collection.json` into Postman.
-
-**Using authentication:**
-
-![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_1.png?raw=true)
-
-Click go to authorization
-
-![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postaman_2.png?raw=true)
-
-Click Get New Access Token
-
-![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_3.png?raw=true)
+## Consuming services
 
 Login using one of test users:
 
@@ -59,6 +46,30 @@ Login using one of test users:
             },
         };
 ```
+### Using angular 17 client (Code is basic and a bit messy for now!)
+
+```
+npm install
+ng serve
+```
+![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/angular_client_home.png?raw=true)
+
+### Using postman
+
+You can consume service by importing `King transports.postman_collection.json` into Postman.
+
+**Using authentication:**
+
+![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_1.png?raw=true)
+
+Click go to authorization
+
+![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postaman_2.png?raw=true)
+
+Click Get New Access Token
+
+![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_3.png?raw=true)
+
 ![alt text](https://github.com/tmedanovic/king-transports/blob/main/Instructions/postman_4.png?raw=true)
 
 Click Use token
