@@ -85,6 +85,7 @@ builder.Services.AddHealthChecks();
 
 builder.Services.AddTransient<IRouteRepository, RouteRepository>();
 builder.Services.AddTransient<ITicketRepository, TicketRepository>();
+builder.Services.AddTransient<IRouteService, RouteService>();
 builder.Services.AddTransient<ITicketService, TicketService>();
 
 builder.Services.RegisterConsulServices(builder.Configuration);

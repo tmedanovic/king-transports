@@ -1,0 +1,20 @@
+
+<form [formGroup]="ticketForm" (ngSubmit)="onSubmit()" class="row g-3">
+
+        <div class="col-6">
+            <label for="route" class="form-label">Route</label>
+            <select id="route" class="form-select" formControlName="routeId">
+                <option value="">Choose route</option>
+                <option *ngFor="let route of routes" [ngValue]="route.routeId">
+                    {{ route.stationFrom.stationName }} - {{ route.stationTo.stationName }}
+                </option>
+            </select>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+                Issue ticket
+            </button>
+        </div>
+
+</form>

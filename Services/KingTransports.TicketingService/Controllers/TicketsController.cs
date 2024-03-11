@@ -3,6 +3,7 @@ using KingTransports.TicketingService.DTOs;
 using KingTransports.TicketingService.Services;
 using KingTransports.Common.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using KingTransports.Common.Collections;
 
 namespace KingTransports.TicketingService.Controllers
 {
@@ -19,7 +20,7 @@ namespace KingTransports.TicketingService.Controllers
 
         [HttpGet]
         [ScopesAndAdminOrAnyOfRolesAuthorize(Scopes = "ticket.validate", Roles = "conductor, ticket-seller")]
-        public async Task<ActionResult<List<TicketDto>>> GetAllTicketsAsync([FromQuery] int page = 1)
+        public async Task<ActionResult<PagedList<TicketDto>>> GetAllTicketsAsync([FromQuery] int page = 1)
         {
             var pagedList = await _ticketService.GetAllTicketsAsync(page);
             return this.OkPaged(pagedList);

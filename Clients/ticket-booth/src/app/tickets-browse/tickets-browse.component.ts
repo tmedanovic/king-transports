@@ -13,7 +13,7 @@ import { NgbPagination } from '@ng-bootstrap/ng-bootstrap';
 })
 export class TicketsBrowseComponent {
 
-  public tickets: any;
+  public tickets: Array<any> = [];
   public currentPage: number = 1;
   public pagination?: Pagination = {
     currentPage: 1,
@@ -23,6 +23,10 @@ export class TicketsBrowseComponent {
   };
 
   constructor(private ticketingService: TicketingService) {
+    ticketingService.ticketCreated.subscribe(ticket => {
+      this.tickets.pop();
+      this.tickets.unshift(ticket);
+    });
     this.loadTicketsPage(1);
   }
 
