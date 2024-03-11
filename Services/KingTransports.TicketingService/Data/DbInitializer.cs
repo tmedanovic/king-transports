@@ -17,15 +17,15 @@ public class DbInitializer
     {
         context.Database.Migrate();
 
-        //if (context.Stations.Any())
-        //{
-        //    Console.WriteLine("Already have data - no need to seed");
-        //    return;
-        //}
+        if (context.Stations.Any())
+        {
+            Console.WriteLine("Already have data - no need to seed");
+            return;
+        }
 
-        context.Tickets.ExecuteDelete();
-        context.Routes.ExecuteDelete();
-        context.Stations.ExecuteDelete();
+        //context.Tickets.ExecuteDelete();
+        //context.Routes.ExecuteDelete();
+        //context.Stations.ExecuteDelete();
 
         var stations = new List<Station>()
         {
