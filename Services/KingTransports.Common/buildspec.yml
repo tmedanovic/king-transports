@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+     - /usr/local/bin/dotnet-install.sh --channel STS
+  pre_build:
+    commands:
+     - aws codeartifact login --tool dotnet --domain king-transports --domain-owner 590438075625 --repository king-transports
+  build:
+    commands:
+      - cd ${CODEBUILD_SRC_DIR}/Services/KingTransports.Common
+      - dotnet build --configuration Release
+      - dotnet pack --configuration Release -o .
+      - dotnet nuget push *.nupkg -s "king-transports/king-transports"
