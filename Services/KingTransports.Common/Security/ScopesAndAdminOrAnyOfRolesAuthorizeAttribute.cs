@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using System.Security.Principal;
 
 namespace KingTransports.Common.Security
 {
@@ -29,6 +30,13 @@ namespace KingTransports.Common.Security
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            IPrincipal user = context.HttpContext.User;
+            if (!user.Identity.IsAuthenticated)
+            {
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
             bool isAuthorized = HasAllScopes(context.HttpContext.User) && HasAnyRole(context.HttpContext.User);
 
             if (!isAuthorized)

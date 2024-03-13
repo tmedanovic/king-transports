@@ -1,4 +1,4 @@
-import { PassedInitialConfig } from 'angular-auth-oidc-client';
+import { LogLevel, PassedInitialConfig } from 'angular-auth-oidc-client';
 
 export const authConfig: PassedInitialConfig = {
   config: {
@@ -11,6 +11,9 @@ export const authConfig: PassedInitialConfig = {
               silentRenew: true,
               useRefreshToken: true,
               renewTimeBeforeTokenExpiresInSeconds: 30,
-              secureRoutes: ['http://localhost:5050']
+              secureRoutes: ['http://localhost:5050'],
+              unauthorizedRoute : '/unauthorized',
+              logLevel: LogLevel.Debug,
+              forbiddenRoute: '/unauthorized'
           }
 }

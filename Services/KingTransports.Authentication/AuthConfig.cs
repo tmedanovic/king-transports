@@ -28,6 +28,10 @@ namespace KingTransports.Auth
                 AllowedCorsOrigins = new string[]
                 {
                     "http://localhost:4200"
+                },
+                PostLogoutRedirectUris = new string[]
+                {
+                     "http://localhost:4200"
                 }
             },
             new Client()

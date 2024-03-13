@@ -37,6 +37,6 @@ export class AppComponent {
   }
 
   public logout() {
-    this.oidcSecurityService.logoff();
+    this.oidcSecurityService.logoffAndRevokeTokens().subscribe(x=> console.log(x), y => console.log(y));
   }
 }
