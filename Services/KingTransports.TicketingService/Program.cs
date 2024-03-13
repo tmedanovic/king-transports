@@ -4,18 +4,19 @@ using KingTransports.TicketingService.Data;
 using KingTransports.TicketingService.Repositories;
 using KingTransports.TicketingService.Services;
 using MassTransit;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using KingTransports.Common.Discovery;
 using System.Net;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+if (builder.Environment.IsDevelopment())
 {
-    serverOptions.Listen(IPAddress.Any, 7001);
-});
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        serverOptions.Listen(IPAddress.Any, 7001);
+    });
+}
 
 // Add services to the container.
 builder.Services.AddControllers(config =>
