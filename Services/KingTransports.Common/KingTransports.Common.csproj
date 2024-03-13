@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,6 +8,8 @@
     <Title>KingTransports Common Lib</Title>
 	<Version>$(Version)</Version>
 	<FileVersion>1.0.0.1</FileVersion>
+	<AssemblyVersion>1.0.0.1</AssemblyVersion>
+	<PackageVersion>1.0.0.1</PackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
