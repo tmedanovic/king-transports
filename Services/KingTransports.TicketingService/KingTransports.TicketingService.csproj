@@ -20,8 +20,14 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
     <PackageReference Include="Polly" Version="7.2.4" />
   </ItemGroup>
-  <ItemGroup>
+	
+	
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
     <ProjectReference Include="..\KingTransports.Common\KingTransports.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+	<PackageReference Include="kingtransports.common" Version="1.0.0.1" />
+  </ItemGroup>
+	
 </Project>
