@@ -42,7 +42,10 @@ else
 {
     connectionString = Environment.GetEnvironmentVariable("PG_CONN_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
+
+Console.WriteLine(builder.Environment.EnvironmentName);
 Console.WriteLine(connectionString);
+
 builder.Services.AddDbContext<TicketDbContext>(option =>
 {
     option.UseNpgsql(connectionString);
