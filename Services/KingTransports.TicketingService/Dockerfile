@@ -2,6 +2,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /app
 
+ENV ASPNETCORE_ENVIRONMENT="production"
+
 # add nuget source
 ARG CODEARTIFACT_AUTH_TOKEN
 ARG NUGET_FEED_URL
