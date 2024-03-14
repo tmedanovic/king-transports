@@ -9,6 +9,7 @@ using KingTransports.Common.Discovery;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -31,10 +32,20 @@ builder.Services.AddLogging();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+string connectionString;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+else
+{
+    connectionString = Environment.GetEnvironmentVariable("PG_CONN_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+
 builder.Services.AddDbContext<TicketDbContext>(option =>
 {
-    var conn = builder.Configuration.GetConnectionString("DefaultConnection");
-    option.UseNpgsql(conn);
+    option.UseNpgsql(connectionString);
 });
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
