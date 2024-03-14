@@ -53,30 +53,34 @@ builder.Services.AddDbContext<TicketDbContext>(option =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// Configure RabbitMq
-builder.Services.AddMassTransit(x =>
+// We will add SQS and SNS in prod
+if (builder.Environment.IsDevelopment())
 {
-    x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
+    // Configure RabbitMq
+    builder.Services.AddMassTransit(x =>
     {
-        o.QueryDelay = TimeSpan.FromSeconds(10);
-
-        o.UsePostgres();
-        o.UseBusOutbox();
-    });
-
-    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
-
-    x.UsingRabbitMq((context, cfg) =>
-    {
-
-        cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+        x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
         {
-            host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
-            host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+            o.QueryDelay = TimeSpan.FromSeconds(10);
+
+            o.UsePostgres();
+            o.UseBusOutbox();
         });
-        cfg.ConfigureEndpoints(context);
+
+        x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
+
+        x.UsingRabbitMq((context, cfg) =>
+        {
+
+            cfg.Host(builder.Configuration["RabbitMq:Host"], "/", host =>
+            {
+                host.Username(builder.Configuration.GetValue("RabbitMq:Username", "guest"));
+                host.Password(builder.Configuration.GetValue("RabbitMq:Password", "guest"));
+            });
+            cfg.ConfigureEndpoints(context);
+        });
     });
-});
+}
 
 builder.Services.AddCors(options =>
 {
