@@ -75,8 +75,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
         .AddIdentityServerAuthentication(options =>
         {
-            options.Authority = "http://localhost:5050/auth";
-            options.ApiName = "ticketing";
+            options.Authority = builder.Configuration.GetValue("IdentityServer:Authority", "");
+            options.ApiName = builder.Configuration.GetValue("IdentityServer:ApiName", "");
             options.RequireHttpsMetadata = false;
         });
 
@@ -89,7 +89,10 @@ builder.Services.AddTransient<ITicketRepository, TicketRepository>();
 builder.Services.AddTransient<IRouteService, RouteService>();
 builder.Services.AddTransient<ITicketService, TicketService>();
 
-builder.Services.RegisterConsulServices(builder.Configuration);
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.RegisterConsulServices(builder.Configuration);
+}
 
 var app = builder.Build();
 
