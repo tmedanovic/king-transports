@@ -7,10 +7,6 @@ ARG CODEARTIFACT_AUTH_TOKEN
 ARG NUGET_FEED_URL
 RUN dotnet nuget add source "${NUGET_FEED_URL}" -n "king-transports/king-transports" -u "aws" -p "${CODEARTIFACT_AUTH_TOKEN}" --store-password-in-clear-text
 
-# Copy the project file and restore any dependencies (use .csproj for the project name)
-COPY *.csproj ./
-RUN dotnet restore
-
 # Copy the rest of the application code
 COPY . .
 
