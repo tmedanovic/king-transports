@@ -5,7 +5,7 @@ WORKDIR /app
 # add nuget source
 ARG CODEARTIFACT_AUTH_TOKEN
 ARG NUGET_FEED_URL
-RUN nuget sources add -name "king-transports/king-transports" -Source "${NUGET_FEED_URL}" -username "aws" -password "${CODEARTIFACT_AUTH_TOKEN}"
+RUN dotnet nuget add source "${NUGET_FEED_URL}" -n "king-transports/king-transports" -u "aws" -p "${CODEARTIFACT_AUTH_TOKEN}"
 
 # Copy the project file and restore any dependencies (use .csproj for the project name)
 COPY *.csproj ./
