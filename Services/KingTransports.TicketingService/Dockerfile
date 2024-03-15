@@ -1,5 +1,10 @@
 # Use the official .NET Core SDK as a parent image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+# add curl for healthchecks
+RUN apt-get update \
+    && apt-get install -y curl
+
 WORKDIR /app
 
 ENV ASPNETCORE_ENVIRONMENT="production"
