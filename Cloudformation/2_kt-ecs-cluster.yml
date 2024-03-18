@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: KT template for ECS cluster
+
+Parameters:
+  VpcStack:
+    Type: String
+    Description: Name of VPC stack to build off of
+    Default: kt-vpc
+
+Resources:
+
+  KtEcsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+        ClusterName: "kt-ecs-cluster"
+
+  KtEcsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+        GroupName: "kt-ecs-sg"
+        GroupDescription: Allow http to client host
+        VpcId:
+          Fn::ImportValue: !Sub ${VpcStack}-vpc-id
+        SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          CidrIp: 0.0.0.0/0
+
+  KtEcsRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: kt-ecs-role
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - ec2.amazonaws.com
+              - ecs.amazonaws.com
+              - ecs-tasks.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonECS_FullAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccessV2
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess
+
+
+  KtAlb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      Scheme: internet-facing
+      SecurityGroups:
+        - !Ref KtEcsSecurityGroup
+      Subnets:
+        - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-a-id
+        - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-b-id
+      Type: application
+
+  KtSdDnsNamespace:
+    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
+    Properties:
+        Name: kt-sd-dns-namespace
+        Vpc: {'Fn::ImportValue': !Sub '${VpcStack}-vpc-id'}
+
+
+  KtDiscoveryService:
+    Type: AWS::ServiceDiscovery::Service
+    Properties: 
+      Description: Discovery Service for KT
+      DnsConfig:
+        RoutingPolicy: MULTIVALUE
+        DnsRecords:
+          - TTL: 60
+            Type: A
+          - TTL: 60
+            Type: SRV
+      HealthCheckCustomConfig: 
+        FailureThreshold: 1
+      Name: kt-discovery-service
+      NamespaceId: !Ref KtSdDnsNamespace
+    
+Outputs:
+
+  KtEcsClusterExport:
+    Description: A reference to the created ECS Cluster
+    Value: !Ref KtEcsCluster
+    Export:
+      Name: !Sub ${AWS::StackName}-ecs-cluster
+
+  KtEcsSecurityGroupExport:
+    Description: A reference to the created SG
+    Value: !Ref KtEcsSecurityGroup
+    Export:
+      Name: !Sub ${AWS::StackName}-default-security-group
+
+  KtEcsRoleExport:
+    Description: A reference to the created IAM Role
+    Value: !Ref KtEcsRole
+    Export:
+      Name: !Sub ${AWS::StackName}-default-role
+
+  KtAlbArnExport:
+    Description: A reference to the created ALB
+    Value: !Ref KtAlb
+    Export:
+      Name: !Sub ${AWS::StackName}-alb-arn
+      
+  KtDiscoveryServiceArnExport:
+    Description: A reference to the created Discovery Service
+    Value: 
+      Fn::GetAtt: KtDiscoveryService.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-ds-arn

@@ -1,0 +1,123 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: KT template for ECS service
+
+Parameters:
+  VpcStack:
+    Type: String
+    Description: Name of VPC stack to build off of
+    Default: kt-vpc
+
+  EcsClusterStack:
+    Type: String
+    Description: Name of ECS Cluster stack to build off of
+    Default: kt-ecs-cluster
+
+Resources:
+
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckPort: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckPath: "/health"
+      Port: 80
+      Protocol: HTTP
+      TargetType: ip
+      VpcId:
+        Fn::ImportValue: !Sub ${VpcStack}-vpc-id
+
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Order: 1
+          TargetGroupArn: !Ref TargetGroup
+          Type: forward
+      LoadBalancerArn:
+        Fn::ImportValue: !Sub ${EcsClusterStack}-alb-arn
+      Port: 80
+      Protocol: HTTP
+    DependsOn:
+      - TargetGroup
+
+  FargateService:
+    Type: AWS::ECS::Service
+    DependsOn: Listener
+    Properties:
+      Name: kt-ticketing-ecs-service
+      Cluster:
+        Fn::ImportValue: !Sub ${EcsClusterStack}-ecs-cluster
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      HealthCheckGracePeriodSeconds: 60
+      LaunchType: FARGATE
+      LoadBalancers:
+        -
+          ContainerName: kt-ticketing-ecs-task
+          ContainerPort: 80
+          TargetGroupArn: !Ref TargetGroup
+      NetworkConfiguration:
+          AwsvpcConfiguration:
+            SecurityGroups:
+              -
+                Fn::ImportValue: !Sub ${EcsClusterStack}-default-security-group
+            Subnets:
+              -
+                Fn::ImportValue: !Sub ${VpcStack}-private-subnet-a-id
+              -
+                Fn::ImportValue: !Sub ${VpcStack}-private-subnet-b-id
+      TaskDefinition: !Ref FargateServiceTaskDefinition
+      ServiceRegistries:
+        - RegistryArn:
+            Fn::ImportValue: !Sub ${EcsClusterStack}-ds-arn
+          Port: 80
+
+  FargateServiceLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+
+  FargateServiceTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        -
+          Name: kt-ticketing-ecs-task
+          Essential: true
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/king-transports/ticketing:Latest"
+          HealthCheck:
+            Command: [ "CMD-SHELL", "curl -f http://localhost/health || exit 1" ]
+          LogConfiguration:
+              LogDriver: awslogs
+              Options:
+                awslogs-group: !Ref FargateServiceLogGroup
+                awslogs-stream-prefix: kt
+                awslogs-region: !Ref AWS::Region
+          PortMappings:
+            -
+                ContainerPort: 80
+                HostPort: 80
+                Protocol: "tcp"
+          Environment: 
+            - 
+              Name: "PGSQL_CONN_STRING"
+              Value: !Sub "Server=kt-pg-rds.choemsenefun.${AWS::Region}.rds.amazonaws.com;Port=5432;Database=ticketing;User Id=postgresking;Password=REPLACEME;"
+      Cpu: '256'
+      ExecutionRoleArn:
+        Fn::ImportValue: !Sub ${EcsClusterStack}-default-role
+      Memory: '512'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        -  FARGATE
+      TaskRoleArn:
+        Fn::ImportValue: !Sub ${EcsClusterStack}-default-role
+
+Outputs:
+
+  FargateServiceName:
+    Description: A reference to the created Fargate Service
+    Value: !GetAtt FargateService.Name
+    Export:
+      Name: !Sub ${AWS::StackName}-fargate-service-name
