@@ -1,10 +1,6 @@
 # Use the official .NET Core SDK as a parent image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
-# add curl for healthchecks
-RUN apt-get update \
-    && apt-get install -y curl
-
 WORKDIR /app
 
 ENV ASPNETCORE_ENVIRONMENT="production"
@@ -24,6 +20,10 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/out ./
+
+# add curl for healthchecks
+RUN apt-get update \
+    && apt-get install -y curl
 
 # Expose the port your application will run on
 EXPOSE 80
