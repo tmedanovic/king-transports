@@ -116,6 +116,12 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+if (!builder.Environment.IsDevelopment())
+{
+    app.UsePathBase(new PathString("/ticketing"));
+}
+
 app.MapHealthChecks("/health");
 app.MapControllers();
 
