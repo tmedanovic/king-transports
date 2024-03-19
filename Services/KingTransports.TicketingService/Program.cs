@@ -122,8 +122,9 @@ if (!builder.Environment.IsDevelopment())
     app.UsePathBase(new PathString("/ticketing"));
 }
 
-app.MapHealthChecks("/health");
+app.UseRouting();
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 try
 {
