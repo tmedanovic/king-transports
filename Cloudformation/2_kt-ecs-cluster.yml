@@ -109,6 +109,17 @@ Resources:
         FailureThreshold: 1
       Name: kt-discovery-service
       NamespaceId: !Ref KtSdDnsNamespace
+      
+  KtListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+      - Type: fixed-response
+        FixedResponseConfig:
+          StatusCode: 404
+      LoadBalancerArn: !Ref KtAlb
+      Port: 80
+      Protocol: HTTP
     
 Outputs:
 
@@ -142,3 +153,9 @@ Outputs:
       Fn::GetAtt: KtDiscoveryService.Arn
     Export:
       Name: !Sub ${AWS::StackName}-ds-arn
+      
+  KtElbListenerArnExport:
+    Description: A reference to the created listener
+    Value: !Ref KtListener
+    Export:
+      Name: !Sub ${AWS::StackName}-elb-listener-arn

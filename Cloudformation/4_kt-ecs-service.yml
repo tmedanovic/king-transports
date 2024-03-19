@@ -11,12 +11,23 @@ Parameters:
     Type: String
     Description: Name of ECS Cluster stack to build off of
     Default: kt-ecs-cluster
+    
+  KtMicroserviceName:
+    Type: String
+    Description: Name of KT microservice
+    Default: ticketing
 
+  KtMicroservicePath:
+    Type: String
+    Description: KT microservice path
+    Default: /ticketing/*
+    
 Resources:
 
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
+      Name: !Sub kt-${KtMicroserviceName}-elb-tg
       HealthCheckEnabled: true
       HealthCheckPort: 80
       HealthCheckProtocol: HTTP
@@ -26,26 +37,27 @@ Resources:
       TargetType: ip
       VpcId:
         Fn::ImportValue: !Sub ${VpcStack}-vpc-id
-
-  Listener:
-    Type: AWS::ElasticLoadBalancingV2::Listener
+        
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
     Properties:
-      DefaultActions:
-        - Order: 1
+      Actions:
+        - Type: forward
           TargetGroupArn: !Ref TargetGroup
-          Type: forward
-      LoadBalancerArn:
-        Fn::ImportValue: !Sub ${EcsClusterStack}-alb-arn
-      Port: 80
-      Protocol: HTTP
-    DependsOn:
-      - TargetGroup
+      Conditions:
+        - Field: path-pattern
+          PathPatternConfig:
+            Values:
+              - !Sub ${KtMicroservicePath}
+      ListenerArn:
+        Fn::ImportValue: !Sub ${EcsClusterStack}-elb-listener-arn
+      Priority: 1
 
   FargateService:
     Type: AWS::ECS::Service
-    DependsOn: Listener
+    DependsOn: ListenerRule
     Properties:
-      Name: kt-ticketing-ecs-service
+      Name: !Sub kt-${KtMicroserviceName}-ecs-service
       Cluster:
         Fn::ImportValue: !Sub ${EcsClusterStack}-ecs-cluster
       DeploymentController:
@@ -55,7 +67,7 @@ Resources:
       LaunchType: FARGATE
       LoadBalancers:
         -
-          ContainerName: kt-ticketing-ecs-task
+          ContainerName: !Sub kt-${KtMicroserviceName}-ecs-task
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
@@ -84,9 +96,9 @@ Resources:
     Properties:
       ContainerDefinitions:
         -
-          Name: kt-ticketing-ecs-task
+          Name: !Sub kt-${KtMicroserviceName}-ecs-task
           Essential: true
-          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/king-transports/ticketing:Latest"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/king-transports/${KtMicroserviceName}:Latest"
           HealthCheck:
             Command: [ "CMD-SHELL", "curl -f http://localhost/health || exit 1" ]
           LogConfiguration:
@@ -103,7 +115,7 @@ Resources:
           Environment: 
             - 
               Name: "PGSQL_CONN_STRING"
-              Value: !Sub "Server=kt-pg-rds.choemsenefun.${AWS::Region}.rds.amazonaws.com;Port=5432;Database=ticketing;User Id=postgresking;Password=REPLACEME;"
+              Value: !Sub "Server=kt-pg-rds.choemsenefun.${AWS::Region}.rds.amazonaws.com;Port=5432;Database=${KtMicroserviceName};User Id=postgresking;Password=REPLACEME;"
       Cpu: '256'
       ExecutionRoleArn:
         Fn::ImportValue: !Sub ${EcsClusterStack}-default-role
