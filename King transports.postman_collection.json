@@ -288,6 +288,21 @@
 		"type": "oauth2",
 		"oauth2": [
 			{
+				"key": "grant_type",
+				"value": "implicit",
+				"type": "string"
+			},
+			{
+				"key": "tokenName",
+				"value": "postman-backoffice-spa",
+				"type": "string"
+			},
+			{
+				"key": "accessTokenUrl",
+				"value": "http://localhost:5050/auth/connect/token",
+				"type": "string"
+			},
+			{
 				"key": "scope",
 				"value": "ticket.issue ticket.validate fleet.read fleet.create accounting.read",
 				"type": "string"
@@ -308,23 +323,8 @@
 				"type": "string"
 			},
 			{
-				"key": "grant_type",
-				"value": "implicit",
-				"type": "string"
-			},
-			{
 				"key": "redirect_uri",
 				"value": "https://www.getpostman.com/oauth2/callback",
-				"type": "string"
-			},
-			{
-				"key": "accessTokenUrl",
-				"value": "http://localhost:5005/connect/token",
-				"type": "string"
-			},
-			{
-				"key": "tokenName",
-				"value": "backoffice-client-token",
 				"type": "string"
 			},
 			{
