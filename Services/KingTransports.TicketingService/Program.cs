@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using KingTransports.Common.Discovery;
 using System.Net;
 using Amazon.Runtime;
+using Amazon.Util;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -83,7 +84,7 @@ builder.Services.AddMassTransit(x =>
         {
             cfg.Host("us-east-1", h =>
             {
-                var credentials = new InstanceProfileAWSCredentials();
+                var credentials = new ECSTaskCredentials();
                 h.Credentials(credentials);
             });
         });
