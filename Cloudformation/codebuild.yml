@@ -175,3 +175,43 @@ Resources:
                     Status: "DISABLED"
                     EncryptionDisabled: false
             Visibility: "PRIVATE"
+            
+    ECRRepository:
+        Type: "AWS::ECR::Repository"
+        Properties:
+            RepositoryName: !Ref EcrImageName
+            LifecyclePolicy:
+              LifecyclePolicyText: |
+                {
+                    "rules": [
+                        {
+                            "rulePriority": 1,
+                            "description": "Keep only 2 images, expire all others",
+                            "selection": {
+                                "tagStatus": "any",
+                                "countType": "imageCountMoreThan",
+                                "countNumber": 2
+                            },
+                            "action": {
+                                "type": "expire"
+                            }
+                        }
+                    ]
+                }    
+            # RepositoryPolicyText:
+                # Version: "2012-10-17"
+                # Statement:
+                    # -
+                      # Sid: AllowPushPull
+                      # Effect: Allow
+                      # Principal:
+                        # AWS:
+                          # - !Ref IAMRole
+                      # Action:
+                          # - "ecr:BatchCheckLayerAvailability"
+                          # - "ecr:BatchGetImage"
+                          # - "ecr:CompleteLayerUpload"
+                          # - "ecr:GetDownloadUrlForLayer"
+                          # - "ecr:InitiateLayerUpload"
+                          # - "ecr:PutImage"
+                          # - "ecr:UploadLayerPart"
