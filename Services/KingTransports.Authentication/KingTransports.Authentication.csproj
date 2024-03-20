@@ -18,8 +18,12 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\KingTransports.Common\KingTransports.Common.csproj" />
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+	  <ProjectReference Include="..\KingTransports.Common\KingTransports.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+	  <PackageReference Include="kingtransports.common" Version="1.0.0.1" />
   </ItemGroup>
 
 </Project>
