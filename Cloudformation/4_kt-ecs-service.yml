@@ -22,6 +22,11 @@ Parameters:
     Description: KT microservice path
     Default: /ticketing/*
     
+  KtAlbListnerRulePriority:
+    Type: Number
+    Description: Listener rule priority
+    Default: 1
+    
 Resources:
 
   TargetGroup:
@@ -51,7 +56,7 @@ Resources:
               - !Sub ${KtMicroservicePath}
       ListenerArn:
         Fn::ImportValue: !Sub ${EcsClusterStack}-elb-listener-arn
-      Priority: 1
+      Priority: !Ref KtAlbListnerRulePriority
 
   FargateService:
     Type: AWS::ECS::Service
@@ -85,6 +90,12 @@ Resources:
         - RegistryArn:
             Fn::ImportValue: !Sub ${EcsClusterStack}-ds-arn
           Port: 80
+      ServiceConnectConfiguration:
+        Enabled: true
+        Services:
+          - PortName: !Sub kt-${KtMicroserviceName}-service-port
+            ClientAliases:
+              - Port: 80
 
   FargateServiceLogGroup:
     Type: AWS::Logs::LogGroup
@@ -108,7 +119,7 @@ Resources:
                 awslogs-stream-prefix: kt
                 awslogs-region: !Ref AWS::Region
           PortMappings:
-            -
+            -   Name: !Sub kt-${KtMicroserviceName}-service-port
                 ContainerPort: 80
                 HostPort: 80
                 Protocol: "tcp"
@@ -116,6 +127,10 @@ Resources:
             - 
               Name: "PGSQL_CONN_STRING"
               Value: !Sub "Server=kt-pg-rds.choemsenefun.${AWS::Region}.rds.amazonaws.com;Port=5432;Database=${KtMicroserviceName};User Id=postgresking;Password=REPLACEME;"
+            - 
+              Name: "ALB_DOMAIN"
+              Value: {'Fn::ImportValue': !Sub '${EcsClusterStack}-alb-dns'}
+              
       Cpu: '256'
       ExecutionRoleArn:
         Fn::ImportValue: !Sub ${EcsClusterStack}-default-role

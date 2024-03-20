@@ -9,11 +9,6 @@ Parameters:
 
 Resources:
 
-  KtEcsCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-        ClusterName: "kt-ecs-cluster"
-
   KtEcsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -120,6 +115,14 @@ Resources:
       LoadBalancerArn: !Ref KtAlb
       Port: 80
       Protocol: HTTP
+      
+  KtEcsCluster:
+    Type: AWS::ECS::Cluster
+    DependsOn: KtDiscoveryService
+    Properties:
+        ClusterName: "kt-ecs-cluster"
+        ServiceConnectDefaults:
+            Namespace: !Ref KtDiscoveryService
     
 Outputs:
 
@@ -146,6 +149,13 @@ Outputs:
     Value: !Ref KtAlb
     Export:
       Name: !Sub ${AWS::StackName}-alb-arn
+      
+  KtAlbDnsExport:
+    Description: A reference to the created ALB
+    Value: 
+      Fn::GetAtt: KtAlb.DNSName
+    Export:
+      Name: !Sub ${AWS::StackName}-alb-dns
       
   KtDiscoveryServiceArnExport:
     Description: A reference to the created Discovery Service
