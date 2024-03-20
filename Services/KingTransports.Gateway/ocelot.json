@@ -2,7 +2,7 @@
   "Routes": [
     {
       "Servicename": "authentication",
-      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamPathTemplate": "/auth/{everything}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],

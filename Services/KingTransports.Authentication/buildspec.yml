@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASS
+      - /usr/local/bin/dotnet-install.sh --channel STS
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Getting CodeArtifact authorization...
+      - export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token --domain "${CODEARTIFACT_DOMAIN}" --domain-owner "${AWS_ACCOUNT_ID}" --query authorizationToken --output text)
+      - export NUGET_FEED_URL="https://${CODEARTIFACT_DOMAIN}-${AWS_ACCOUNT_ID}.d.codeartifact.${AWS_DEFAULT_REGION}.amazonaws.com/nuget/${CODEARTIFACT_REPO}/v3/index.json"
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image... 
+      - cd ${CODEBUILD_SRC_DIR}/Services/KingTransports.Authentication/
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG --build-arg CODEARTIFACT_AUTH_TOKEN --build-arg NUGET_FEED_URL .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - echo Done!!

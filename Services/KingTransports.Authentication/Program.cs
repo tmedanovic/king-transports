@@ -6,14 +6,26 @@ using System.Net;
 using KingTransports.Common.Discovery;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
-builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+if (builder.Environment.IsDevelopment())
 {
-    serverOptions.Listen(IPAddress.Any, 5005);
-});
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        serverOptions.Listen(IPAddress.Any, 5005);
+    });
+}
 
-// Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+string connectionString;
+if (builder.Environment.IsDevelopment())
+{
+    connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+else
+{
+    connectionString = Environment.GetEnvironmentVariable("PGSQL_CONN_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
@@ -44,7 +56,12 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddAuthentication();
 builder.Services.AddHealthChecks();
-builder.Services.RegisterConsulServices(builder.Configuration);
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.RegisterConsulServices(builder.Configuration);
+}
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -62,6 +79,21 @@ else
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
+app.UsePathBase(new PathString("/auth"));
+
+// Allowing only login, logout for demo and connect
+app.Use(async (context, next) =>
+{
+    var allowed = new string[] { "/", "/health", "/lib", "/css", "/js", "/KingTransports.styles", "/Identity/lib", "/Identity/Account/Login", "/Identity/Account/Logout", "/connect" };
+    if (context.Request.Path.Value == "" || allowed.Any(x => context.Request.Path.Value.ToLower().StartsWith(x.ToLower())))
+    {
+        await next();
+        return;
+    }
+    context.Response.StatusCode = 404; //Not found
+    return;
+});
 app.UseStaticFiles();
 
 app.UseRouting();
