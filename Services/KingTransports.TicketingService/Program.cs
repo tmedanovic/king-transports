@@ -50,22 +50,21 @@ builder.Services.AddDbContext<TicketDbContext>(option =>
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-// We will add SQS and SNS in prod
-if (builder.Environment.IsDevelopment())
+
+builder.Services.AddMassTransit(x =>
 {
-    // Configure RabbitMq
-    builder.Services.AddMassTransit(x =>
+    x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
     {
-        x.AddEntityFrameworkOutbox<TicketDbContext>(o =>
-        {
-            o.QueryDelay = TimeSpan.FromSeconds(10);
+        o.QueryDelay = TimeSpan.FromSeconds(10);
 
-            o.UsePostgres();
-            o.UseBusOutbox();
-        });
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
 
-        x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
+    x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("ticketing", false));
 
+    if (builder.Environment.IsDevelopment())
+    {
         x.UsingRabbitMq((context, cfg) =>
         {
 
@@ -76,8 +75,20 @@ if (builder.Environment.IsDevelopment())
             });
             cfg.ConfigureEndpoints(context);
         });
-    });
-}
+    }
+    else
+    {
+        x.UsingAmazonSqs((context, cfg) =>
+        {
+            cfg.Host("us-east-1", h =>
+            {
+                //h..AccessKey("your-iam-access-key");
+                //h.SecretKey("your-iam-secret-key");
+            });
+        });
+    }
+});
+
 
 builder.Services.AddCors(options =>
 {
