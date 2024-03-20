@@ -43,9 +43,6 @@ else
     connectionString = Environment.GetEnvironmentVariable("PGSQL_CONN_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 }
 
-Console.WriteLine(builder.Environment.EnvironmentName);
-Console.WriteLine(connectionString);
-
 builder.Services.AddDbContext<TicketDbContext>(option =>
 {
     option.UseNpgsql(connectionString);
@@ -93,7 +90,15 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
         .AddIdentityServerAuthentication(options =>
         {
-            options.Authority = builder.Configuration.GetValue("IdentityServer:Authority", "");
+            if (builder.Environment.IsDevelopment())
+            {
+                options.Authority = builder.Configuration.GetValue("IdentityServer:Authority", "");
+            }
+            else
+            {
+                var domain = Environment.GetEnvironmentVariable("ALB_DOMAIN");
+                options.Authority = string.Format("http://{0}/auth", domain);
+            }
             options.ApiName = builder.Configuration.GetValue("IdentityServer:ApiName", "");
             options.RequireHttpsMetadata = false;
         });
