@@ -23,7 +23,11 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    connectionString = Environment.GetEnvironmentVariable("PGSQL_CONN_STRING") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    var server = Environment.GetEnvironmentVariable("PGSQL_SERVER");
+    var port = Environment.GetEnvironmentVariable("PGSQL_PORT");
+    var user = Environment.GetEnvironmentVariable("PGSQL_USER");
+    var password = Environment.GetEnvironmentVariable("PGSQL_PASSWORD");
+    connectionString = $"Server={server};Port={port};Database=auth;User Id={user};Password={password};";
 }
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
