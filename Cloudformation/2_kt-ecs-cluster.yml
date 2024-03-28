@@ -83,29 +83,6 @@ Resources:
         - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-b-id
       Type: application
 
-  KtSdDnsNamespace:
-    Type: AWS::ServiceDiscovery::PrivateDnsNamespace
-    Properties:
-        Name: kt-sd-dns-namespace
-        Vpc: {'Fn::ImportValue': !Sub '${VpcStack}-vpc-id'}
-
-
-  KtDiscoveryService:
-    Type: AWS::ServiceDiscovery::Service
-    Properties: 
-      Description: Discovery Service for KT
-      DnsConfig:
-        RoutingPolicy: MULTIVALUE
-        DnsRecords:
-          - TTL: 60
-            Type: A
-          - TTL: 60
-            Type: SRV
-      HealthCheckCustomConfig: 
-        FailureThreshold: 1
-      Name: kt-discovery-service
-      NamespaceId: !Ref KtSdDnsNamespace
-      
   KtListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -119,11 +96,8 @@ Resources:
       
   KtEcsCluster:
     Type: AWS::ECS::Cluster
-    DependsOn: KtDiscoveryService
     Properties:
         ClusterName: "kt-ecs-cluster"
-        ServiceConnectDefaults:
-            Namespace: !Ref KtDiscoveryService
     
 Outputs:
 
@@ -157,14 +131,7 @@ Outputs:
       Fn::GetAtt: KtAlb.DNSName
     Export:
       Name: !Sub ${AWS::StackName}-alb-dns
-      
-  KtDiscoveryServiceArnExport:
-    Description: A reference to the created Discovery Service
-    Value: 
-      Fn::GetAtt: KtDiscoveryService.Arn
-    Export:
-      Name: !Sub ${AWS::StackName}-ds-arn
-      
+
   KtElbListenerArnExport:
     Description: A reference to the created listener
     Value: !Ref KtListener
