@@ -63,6 +63,7 @@ Resources:
     DependsOn: ListenerRule
     Properties:
       Name: !Sub kt-${KtMicroserviceName}-ecs-service
+      ServiceName: !Sub kt-${KtMicroserviceName}-ecs-service
       Cluster:
         Fn::ImportValue: !Sub ${EcsClusterStack}-ecs-cluster
       DeploymentController:
@@ -86,16 +87,6 @@ Resources:
               -
                 Fn::ImportValue: !Sub ${VpcStack}-private-subnet-b-id
       TaskDefinition: !Ref FargateServiceTaskDefinition
-      ServiceRegistries:
-        - RegistryArn:
-            Fn::ImportValue: !Sub ${EcsClusterStack}-ds-arn
-          Port: 80
-      ServiceConnectConfiguration:
-        Enabled: true
-        Services:
-          - PortName: !Sub kt-${KtMicroserviceName}-service-port
-            ClientAliases:
-              - Port: 80
 
   FargateServiceLogGroup:
     Type: AWS::Logs::LogGroup
@@ -105,6 +96,7 @@ Resources:
   FargateServiceTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
+      Family: !Sub kt-${KtMicroserviceName}-ecs-task
       ContainerDefinitions:
         -
           Name: !Sub kt-${KtMicroserviceName}-ecs-task
@@ -125,8 +117,17 @@ Resources:
                 Protocol: "tcp"
           Environment: 
             - 
-              Name: "PGSQL_CONN_STRING"
-              Value: !Sub "Server=kt-pg-rds.choemsenefun.${AWS::Region}.rds.amazonaws.com;Port=5432;Database=${KtMicroserviceName};User Id=postgresking;Password=REPLACEME;"
+              Name: "PGSQL_SERVER"
+              Value: {'Fn::ImportValue': !Sub '${EcsClusterStack}-pg-rds-address'}
+            - 
+              Name: "PGSQL_PORT"
+              Value: {'Fn::ImportValue': !Sub '${EcsClusterStack}-pg-rds-port'}
+            - 
+              Name: "PGSQL_USER"
+              Value: !Join ['', ['{{resolve:secretsmanager:', {'Fn::ImportValue': !Sub '${EcsClusterStack}-pg-rds-secret-name'}, ':SecretString:username}}' ]]
+            - 
+              Name: "PGSQL_PASSWORD"
+              Value: !Join ['', ['{{resolve:secretsmanager:', {'Fn::ImportValue': !Sub '${EcsClusterStack}-pg-rds-secret-name'}, ':SecretString:password}}' ]]
             - 
               Name: "ALB_DOMAIN"
               Value: {'Fn::ImportValue': !Sub '${EcsClusterStack}-alb-dns'}

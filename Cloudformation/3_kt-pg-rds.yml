@@ -36,17 +36,29 @@ Resources:
             Fn::ImportValue: !Sub ${VpcStack}-private-subnet-a-id
           -
             Fn::ImportValue: !Sub ${VpcStack}-private-subnet-b-id
-      
+   
+    KtDbSecret:
+      Type: 'AWS::SecretsManager::Secret'
+      Properties:
+        Name: "kt-db-secret"
+        Description: KT RDS username and password
+        GenerateSecretString:
+          SecretStringTemplate: '{"username": "postgresking"}'
+          GenerateStringKey: password
+          PasswordLength: 32
+          ExcludeCharacters: '"@/\'
+        
     KtDbInstance:
         Type: "AWS::RDS::DBInstance"
+        DependsOn: KtDbSecret
         Properties:
             DBInstanceIdentifier: "kt-pg-rds"
             AllocatedStorage: 20
             DBInstanceClass: "db.t3.micro"
             Engine: "postgres"
             DBName: "postgresking"
-            MasterUsername: "postgresking"
-            MasterUserPassword: "REPLACEME"
+            MasterUsername: !Join ['', ['{{resolve:secretsmanager:', !Ref KtDbSecret, ':SecretString:username}}' ]]
+            MasterUserPassword: !Join ['', ['{{resolve:secretsmanager:', !Ref KtDbSecret, ':SecretString:password}}' ]]
             PreferredBackupWindow: "03:34-04:04"
             BackupRetentionPeriod: 1
             AvailabilityZone: !Sub "${AWS::Region}b"
@@ -69,3 +81,23 @@ Resources:
             MaxAllocatedStorage: 1000
             DBParameterGroupName: "default.postgres16"
             OptionGroupName: "default:postgres-16"
+
+Outputs:
+
+  KtDbAddressExport:
+    Description: A reference to the created RDS instance address
+    Value: !GetAtt KtDbInstance.Endpoint.Address
+    Export:
+      Name: !Sub ${EcsClusterStack}-pg-rds-address
+      
+  KtDbPortExport:
+    Description: A reference to the created RDS instance port
+    Value: !GetAtt KtDbInstance.Endpoint.Port
+    Export:
+      Name: !Sub ${EcsClusterStack}-pg-rds-port
+      
+  KtDbSecretNameExport:
+    Description: A reference to the created RDS instance secret (username/password)
+    Value: !Ref KtDbSecret
+    Export:
+      Name: !Sub ${EcsClusterStack}-pg-rds-secret-name
