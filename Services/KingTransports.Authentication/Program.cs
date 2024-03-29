@@ -93,6 +93,7 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
+    app.UseForwardedHeaders();
     app.UseExceptionHandler("/Home/Error");
 }
 
