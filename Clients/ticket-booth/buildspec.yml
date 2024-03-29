@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      – echo Installing angular cli…
+      – npm install -g @angular/cli@17.2.3
+  build:
+    commands:
+      - echo Build started on `date`
+      - cd ${CODEBUILD_SRC_DIR}/Clients/ticket-booth/
+      – npm install
+      – npm run build
+      – echo Build completed…
+  post build:
+    commands:
+      - echo Build completed on `date`
+      – echo Syncing to S3..
+      – aws s3 sync ./dist s3://$BUCKET_NAME
+      - echo Done!!
