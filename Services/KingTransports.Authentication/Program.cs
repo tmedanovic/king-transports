@@ -112,7 +112,7 @@ app.Use(async (context, next) =>
     return;
 });
 app.UseStaticFiles();
-
+app.UseCors();
 app.UseRouting();
 app.UseIdentityServer();
 app.UseAuthorization();
