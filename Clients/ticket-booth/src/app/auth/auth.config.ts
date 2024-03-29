@@ -1,8 +1,9 @@
 import { LogLevel, PassedInitialConfig } from 'angular-auth-oidc-client';
+import { environment } from './../../environments/environment';
 
 export const authConfig: PassedInitialConfig = {
   config: {
-              authority: 'http://localhost:5050/auth',
+              authority: `${environment.apiUrl}/auth`,
               redirectUrl: window.location.origin,
               postLogoutRedirectUri: window.location.origin,
               clientId: 'ticket-booth-spa',
@@ -11,7 +12,7 @@ export const authConfig: PassedInitialConfig = {
               silentRenew: true,
               useRefreshToken: true,
               renewTimeBeforeTokenExpiresInSeconds: 30,
-              secureRoutes: ['http://localhost:5050'],
+              secureRoutes: [environment.apiUrl],
               unauthorizedRoute : '/unauthorized',
               logLevel: LogLevel.Debug,
               forbiddenRoute: '/unauthorized'

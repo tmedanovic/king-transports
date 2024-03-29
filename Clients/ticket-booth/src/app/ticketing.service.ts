@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject, map } from 'rxjs';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class TicketingService {
   }
 
   constructor(private http: HttpClient) {
-    this.apiUrl = 'http://localhost:5050/ticketing/tickets';
+    this.apiUrl = `${environment.apiUrl}/ticketing/tickets`;
   }
 
   createTicket(ticket: any) {
