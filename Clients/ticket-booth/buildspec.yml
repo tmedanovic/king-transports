@@ -18,5 +18,5 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Syncing to S3..
-      - aws s3 sync ./dist s3://$BUCKET_NAME
+      - aws s3 sync ./dist/ticket-booth/browser s3://$BUCKET_NAME
       - echo Done!!
