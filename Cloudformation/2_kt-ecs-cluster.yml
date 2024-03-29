@@ -2,11 +2,26 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: KT template for ECS cluster
 
 Parameters:
+
   VpcStack:
     Type: String
     Description: Name of VPC stack to build off of
     Default: kt-vpc
-
+  
+  DomainName:
+    Type: String
+    Description: The DNS name of an existing Amazon Route 53 hosted zone e.g. king-transports.com
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+    Default: king-transports.com
+    
+  ApiDomainName:
+    Type: String
+    Description: The full API domain name e.g. api.king-transports.com
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+    Default: api.king-transports.com
+    
 Resources:
 
   KtEcsSecurityGroup:
@@ -83,17 +98,39 @@ Resources:
         - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-b-id
       Type: application
 
+  # TODO: Get hosted Zone id from domain name
+  SSLCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref 'ApiDomainName'
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - DomainName: !Ref 'ApiDomainName'
+          HostedZoneId: Z03079513ORY4C37190FP
+  
+  # ListenerCertificate:
+    # Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
+    # Properties: 
+      # Certificates: 
+        # - CertificateArn: !Ref Certificate
+      # ListenerArn: !Ref KtListener
+    # DependsOn: KtListener  
+
   KtListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
+      Certificates: 
+        - CertificateArn: !Ref SSLCertificate
       DefaultActions:
-      - Type: fixed-response
-        FixedResponseConfig:
-          StatusCode: 404
+        - Type: fixed-response
+          FixedResponseConfig:        
+            ContentType: text/plain
+            MessageBody: "Not Found"
+            StatusCode: 404
+      Port: 443
+      Protocol: HTTPS
       LoadBalancerArn: !Ref KtAlb
-      Port: 80
-      Protocol: HTTP
-      
+       
   KtEcsCluster:
     Type: AWS::ECS::Cluster
     Properties:
