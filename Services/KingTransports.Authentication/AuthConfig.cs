@@ -13,7 +13,11 @@ namespace KingTransports.Auth
                 AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
                 RequireClientSecret = false,
-                RedirectUris = { "http://localhost:4200"  },
+                RedirectUris = 
+                 { 
+                     "http://localhost:4200", 
+                     "https://tb.king-transports.com"  
+                 },
                 AllowedScopes =
                 {
                     "ticket.validate",
@@ -27,11 +31,13 @@ namespace KingTransports.Auth
                 RequireConsent = false,
                 AllowedCorsOrigins = new string[]
                 {
-                    "http://localhost:4200"
+                    "http://localhost:4200",
+                    "https://tb.king-transports.com"
                 },
                 PostLogoutRedirectUris = new string[]
                 {
-                     "http://localhost:4200"
+                     "http://localhost:4200",
+                     "https://tb.king-transports.com"
                 }
             },
             new Client()
@@ -40,7 +46,11 @@ namespace KingTransports.Auth
                 AllowedGrantTypes = GrantTypes.Implicit,
                 RequirePkce = false,
                 RequireClientSecret = false,
-                RedirectUris = { "https://oauth.pstmn.io/v1/callback", "https://www.getpostman.com/oauth2/callback"  },            
+                RedirectUris = 
+                { 
+                    "https://oauth.pstmn.io/v1/callback", 
+                    "https://www.getpostman.com/oauth2/callback"  
+                },            
                 AllowedScopes =
                 {
                     "ticket.validate",
@@ -61,7 +71,11 @@ namespace KingTransports.Auth
                 AllowedGrantTypes = GrantTypes.Code,
                 RequirePkce = true,
                 RequireClientSecret = false,
-                RedirectUris = { "https://oauth.pstmn.io/v1/callback", "https://www.getpostman.com/oauth2/callback" },
+                RedirectUris = 
+                { 
+                    "https://oauth.pstmn.io/v1/callback", 
+                    "https://www.getpostman.com/oauth2/callback" 
+                },
                 AllowedScopes =
                 {
                     "ticketing",
