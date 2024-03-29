@@ -114,7 +114,7 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
             else
             {
                 var domain = Environment.GetEnvironmentVariable("ALB_DOMAIN");
-                options.Authority = string.Format("http://{0}/auth", domain);
+                options.Authority = string.Format("https://{0}/auth", domain);
             }
             options.ApiName = builder.Configuration.GetValue("IdentityServer:ApiName", "");
             options.RequireHttpsMetadata = false;
