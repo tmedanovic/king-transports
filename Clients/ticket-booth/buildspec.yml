@@ -14,7 +14,7 @@ phases:
       - npm install
       - npm run build
       - echo Build completed…
-  post build:
+  post_build:
     commands:
       - echo Build completed on `date`
       - echo Syncing to S3..
