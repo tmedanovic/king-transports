@@ -11,7 +11,7 @@
     },
     {
       "Servicename": "ticketing",
-      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamPathTemplate": "/ticketing/{everything}",
       "DownstreamScheme": "http",
       "UpstreamPathTemplate": "/ticketing/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],

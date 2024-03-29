@@ -8,7 +8,7 @@ using KingTransports.Common.Collections;
 namespace KingTransports.TicketingService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class TicketsController : ControllerBase
     {
         private readonly ITicketService _ticketService;

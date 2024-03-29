@@ -8,7 +8,7 @@ using KingTransports.Common.Extensions;
 namespace KingTransports.TicketingService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class RoutesController : ControllerBase
     {
         private readonly IRouteService _routeService;
