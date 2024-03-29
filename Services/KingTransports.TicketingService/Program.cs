@@ -117,7 +117,7 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
                 options.Authority = string.Format("https://{0}/auth", domain);
             }
             options.ApiName = builder.Configuration.GetValue("IdentityServer:ApiName", "");
-            options.RequireHttpsMetadata = false;
+            options.RequireHttpsMetadata = true;
         });
 
 builder.Services.AddHealthChecks();
@@ -144,6 +144,7 @@ if (!builder.Environment.IsDevelopment())
     app.UsePathBase(new PathString("/ticketing"));
 }
 
+app.UseCors();
 app.UseRouting();
 app.MapControllers();
 app.MapHealthChecks("/health");
