@@ -2,6 +2,7 @@ AWSTemplateFormatVersion: 2010-09-09
 Description: KT template for ECS service
 
 Parameters:
+
   VpcStack:
     Type: String
     Description: Name of VPC stack to build off of
@@ -27,8 +28,15 @@ Parameters:
     Description: Listener rule priority
     Default: 1
     
+  ApiDomainName:
+    Type: String
+    Description: The full API domain name e.g. api.king-transports.com
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid DNS zone name.
+    Default: api.king-transports.com
+    
 Resources:
-
+            
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
@@ -79,13 +87,10 @@ Resources:
       NetworkConfiguration:
           AwsvpcConfiguration:
             SecurityGroups:
-              -
-                Fn::ImportValue: !Sub ${EcsClusterStack}-default-security-group
+              - Fn::ImportValue: !Sub ${EcsClusterStack}-default-security-group
             Subnets:
-              -
-                Fn::ImportValue: !Sub ${VpcStack}-private-subnet-a-id
-              -
-                Fn::ImportValue: !Sub ${VpcStack}-private-subnet-b-id
+              - Fn::ImportValue: !Sub ${VpcStack}-private-subnet-a-id
+              - Fn::ImportValue: !Sub ${VpcStack}-private-subnet-b-id
       TaskDefinition: !Ref FargateServiceTaskDefinition
 
   FargateServiceLogGroup:
@@ -131,6 +136,9 @@ Resources:
             - 
               Name: "ALB_DOMAIN"
               Value: {'Fn::ImportValue': !Sub '${EcsClusterStack}-alb-dns'}
+            - 
+              Name: "API_DOMAIN"
+              Value: !Ref ApiDomainName
               
       Cpu: '256'
       ExecutionRoleArn:
