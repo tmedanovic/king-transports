@@ -13,8 +13,7 @@ export const authConfig: PassedInitialConfig = {
               useRefreshToken: true,
               renewTimeBeforeTokenExpiresInSeconds: 30,
               secureRoutes: [environment.apiUrl],
-              unauthorizedRoute : '/unauthorized',
-              logLevel: LogLevel.Debug,
-              forbiddenRoute: '/unauthorized'
+              unauthorizedRoute : '/login',
+              logLevel: LogLevel.Error
           }
 }

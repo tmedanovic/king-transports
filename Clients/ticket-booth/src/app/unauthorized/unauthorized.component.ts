@@ -13,6 +13,8 @@ export class UnauthorizedComponent {
     constructor(public oidcSecurityService: OidcSecurityService) {}
 
     login() {
-      this.oidcSecurityService.authorize();
+      this.oidcSecurityService.authorize(undefined, {
+        redirectUrl : window.location.origin
+      });
     }
 }

@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NgbDropdown, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { Router, RouterOutlet } from '@angular/router';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
 
 @Component({
@@ -12,31 +12,29 @@ import { LoginResponse, OidcSecurityService } from 'angular-auth-oidc-client';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  
+
   public userData$;
   public isAuthenticated: boolean = false;
 
-  constructor(public oidcSecurityService: OidcSecurityService) {
+  constructor(public oidcSecurityService: OidcSecurityService, private router: Router) {
     this.userData$ = this.oidcSecurityService.userData$;
     this.userData$.subscribe(x => {
       console.log(x.userData);
     })
   }
-  
+
   ngOnInit() {
     this.oidcSecurityService
       .checkAuth()
       .subscribe((loginResponse: LoginResponse) => {
 
         this.isAuthenticated = loginResponse.isAuthenticated;
-
-        if(!this.isAuthenticated) {
-          this.oidcSecurityService.authorize();
-        }
       });
   }
 
   public logout() {
-    this.oidcSecurityService.logoffAndRevokeTokens().subscribe(x=> console.log(x), y => console.log(y));
+    this.oidcSecurityService.logoffAndRevokeTokens().subscribe({complete: () => {
+      this.router.navigate(['/unauthorized']);
+    }});
   }
 }
