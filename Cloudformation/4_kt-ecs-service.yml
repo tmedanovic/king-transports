@@ -21,7 +21,7 @@ Parameters:
   KtMicroservicePath:
     Type: String
     Description: KT microservice path
-    Default: /ticketing/*
+    Default: /ticketing*
     
   KtAlbListnerRulePriority:
     Type: Number
