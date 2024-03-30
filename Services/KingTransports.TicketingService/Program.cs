@@ -110,14 +110,15 @@ builder.Services.AddAuthentication(IdentityServerAuthenticationDefaults.Authenti
             if (builder.Environment.IsDevelopment())
             {
                 options.Authority = builder.Configuration.GetValue("IdentityServer:Authority", "");
+                options.RequireHttpsMetadata = false;
             }
             else
             {
                 var domain = Environment.GetEnvironmentVariable("API_DOMAIN");
                 options.Authority = string.Format("https://{0}/auth", domain);
+                options.RequireHttpsMetadata = true;
             }
             options.ApiName = builder.Configuration.GetValue("IdentityServer:ApiName", "");
-            options.RequireHttpsMetadata = true;
         });
 
 builder.Services.AddHealthChecks();
@@ -138,11 +139,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-if (!builder.Environment.IsDevelopment())
-{
-    app.UsePathBase(new PathString("/ticketing"));
-}
+app.UsePathBase(new PathString("/ticketing"));
 
 app.UseCors();
 app.UseRouting();
