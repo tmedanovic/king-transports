@@ -1,8 +1,17 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: KT VPC template similar to the default VPC
 
+Parameters:
+
+  DomainName:
+    Type: String
+    Description: DNS name of your domain (eg. king-transports.com)
+    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
+    ConstraintDescription: must be a valid domain name.
+    
 Resources:
-  KtVpc:
+
+  Vpc:
     Type: AWS::EC2::VPC
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -14,7 +23,7 @@ Resources:
     Properties:
       CidrBlock: 10.0.0.0/24
       AvailabilityZone: us-east-1a
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
       MapPublicIpOnLaunch: true
       
   PublicSubnetB:
@@ -22,7 +31,7 @@ Resources:
     Properties:
       CidrBlock: 10.0.1.0/24
       AvailabilityZone: us-east-1b
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
       MapPublicIpOnLaunch: true
       
   PrivateSubnetA:
@@ -30,14 +39,14 @@ Resources:
     Properties:
       CidrBlock: 10.0.2.0/24
       AvailabilityZone: us-east-1a
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
       
   PrivateSubnetB:
     Type: AWS::EC2::Subnet
     Properties:
       CidrBlock: 10.0.3.0/24
       AvailabilityZone: us-east-1b
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
 
 # -----------------------------------------------------------------------------
 # Public subnets
@@ -46,12 +55,12 @@ Resources:
   PublicRouteTableA:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
       
   PublicRouteTableB:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
@@ -60,7 +69,7 @@ Resources:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
 
   PublicDefaultRouteA:
     Type: AWS::EC2::Route
@@ -95,12 +104,12 @@ Resources:
   PrivateRouteTableA:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
       
   PrivateRouteTableB:
     Type: AWS::EC2::RouteTable
     Properties:
-      VpcId: !Ref KtVpc
+      VpcId: !Ref Vpc
 
   NatA:
    Type: AWS::EC2::NatGateway
@@ -155,11 +164,31 @@ Resources:
     Properties:
       SubnetId: !Ref PrivateSubnetB
       RouteTableId: !Ref PrivateRouteTableB
+      
+# -----------------------------------------------------------------------------
+# Hosted zone
+# -----------------------------------------------------------------------------
+
+  Route53HostedZone:
+    Type: "AWS::Route53::HostedZone"
+    Properties:
+      Name: !Sub "${DomainName}"
+
+  # Route53NSRecordSet:
+    # Type: "AWS::Route53::RecordSet"
+    # Properties:
+      # Name: !Sub "${DomainName}"
+      # HostedZoneId: !Ref Route53HostedZone
+      # Type: "NS"
+      # TTL: 900
+      # ResourceRecords: !GetAtt Route53HostedZone.NameServers
+    # DependsOn: Route53HostedZone
 
 Outputs:
+
   VpcExport:
     Description: A reference to the created VPC
-    Value: !Ref KtVpc
+    Value: !Ref Vpc
     Export:
       Name: !Sub ${AWS::StackName}-vpc-id
 
@@ -186,3 +215,8 @@ Outputs:
     Value: !Ref PrivateSubnetB
     Export:
       Name: !Sub ${AWS::StackName}-private-subnet-b-id
+      
+  HostedZoneIdExport:
+    Value: !Ref Route53HostedZone
+    Export:
+      Name: !Sub '${AWS::StackName}-hosted-zone-id'

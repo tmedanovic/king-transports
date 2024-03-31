@@ -1,14 +1,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Creates an S3 bucket configured for hosting a static website, and a Route
-  53 DNS record pointing to the bucket
+Description: KT template that creates an S3 bucket configured for hosting a static website, and a Route 53 DNS record pointing to the bucket, and CloudFront distribution
   
 Parameters:
 
-  DomainName:
+  VpcStackName:
     Type: String
-    Description: The DNS name of an existing Amazon Route 53 hosted zone e.g. king-transports.com
-    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
-    ConstraintDescription: must be a valid DNS zone name.
+    Description: Name of VPC stack to build off of
+    Default: kt-vpc
     
   FullDomainName:
     Type: String
@@ -25,7 +23,7 @@ Resources:
       ValidationMethod: DNS
       DomainValidationOptions:
         - DomainName: !Ref 'FullDomainName'
-          HostedZoneId: Z03079513ORY4C37190FP
+          HostedZoneId: {'Fn::ImportValue': !Sub '${VpcStackName}-hosted-zone-id'}
     
   Cloudfront:
     Type: AWS::CloudFront::Distribution
@@ -105,8 +103,8 @@ Resources:
   Route53:
     Type: AWS::Route53::RecordSetGroup
     Properties:
-      HostedZoneName: !Sub '${DomainName}.'
-      Comment: Zone apex alias targeted to CloudFront
+      HostedZoneId: {'Fn::ImportValue': !Sub '${VpcStackName}-hosted-zone-id'}
+      Comment: KT record set group for cloudfront frontend application
       RecordSets:
       - Name: !Sub '${FullDomainName}.'
         Type: A

@@ -3,17 +3,10 @@ Description: KT template for ECS cluster
 
 Parameters:
 
-  VpcStack:
+  VpcStackName:
     Type: String
     Description: Name of VPC stack to build off of
     Default: kt-vpc
-  
-  DomainName:
-    Type: String
-    Description: The DNS name of an existing Amazon Route 53 hosted zone e.g. king-transports.com
-    AllowedPattern: (?!-)[a-zA-Z0-9-.]{1,63}(?<!-)
-    ConstraintDescription: must be a valid DNS zone name.
-    Default: king-transports.com
     
   ApiDomainName:
     Type: String
@@ -24,13 +17,13 @@ Parameters:
     
 Resources:
 
-  KtEcsSecurityGroup:
+  EcsSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
         GroupName: "kt-ecs-sg"
         GroupDescription: Allow http to client host
         VpcId:
-          Fn::ImportValue: !Sub ${VpcStack}-vpc-id
+          Fn::ImportValue: !Sub ${VpcStackName}-vpc-id
         SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -62,7 +55,7 @@ Resources:
           ToPort: 5432
           CidrIp: 0.0.0.0/0
 
-  KtEcsRole:
+  EcsRole:
     Type: 'AWS::IAM::Role'
     Properties:
       RoleName: kt-ecs-role
@@ -86,19 +79,30 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonSQSFullAccess
 
 
-  KtAlb:
+  Alb:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
       IpAddressType: ipv4
+      Name: 'kt-alb'
       Scheme: internet-facing
       SecurityGroups:
-        - !Ref KtEcsSecurityGroup
+        - !Ref EcsSecurityGroup
       Subnets:
-        - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-a-id
-        - Fn::ImportValue: !Sub ${VpcStack}-public-subnet-b-id
+        - Fn::ImportValue: !Sub ${VpcStackName}-public-subnet-a-id
+        - Fn::ImportValue: !Sub ${VpcStackName}-public-subnet-b-id
       Type: application
 
-  # TODO: Get hosted Zone id from domain name
+  Route53RecordSet:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      Name: !Ref 'ApiDomainName'
+      Type: "A"
+      AliasTarget:
+        HostedZoneId: !GetAtt Alb.CanonicalHostedZoneID
+        DNSName: !GetAtt Alb.DNSName
+        EvaluateTargetHealth: true
+      HostedZoneId: {'Fn::ImportValue': !Sub '${VpcStackName}-hosted-zone-id'}
+
   SSLCertificate:
     Type: AWS::CertificateManager::Certificate
     Properties:
@@ -106,17 +110,9 @@ Resources:
       ValidationMethod: DNS
       DomainValidationOptions:
         - DomainName: !Ref 'ApiDomainName'
-          HostedZoneId: Z03079513ORY4C37190FP
-  
-  # ListenerCertificate:
-    # Type: AWS::ElasticLoadBalancingV2::ListenerCertificate
-    # Properties: 
-      # Certificates: 
-        # - CertificateArn: !Ref Certificate
-      # ListenerArn: !Ref KtListener
-    # DependsOn: KtListener  
+          HostedZoneId: {'Fn::ImportValue': !Sub '${VpcStackName}-hosted-zone-id'}
 
-  KtListener:
+  Listener:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
       Certificates: 
@@ -129,48 +125,48 @@ Resources:
             StatusCode: 404
       Port: 443
       Protocol: HTTPS
-      LoadBalancerArn: !Ref KtAlb
+      LoadBalancerArn: !Ref Alb
        
-  KtEcsCluster:
+  EcsCluster:
     Type: AWS::ECS::Cluster
     Properties:
         ClusterName: "kt-ecs-cluster"
     
 Outputs:
 
-  KtEcsClusterExport:
+  EcsClusterExport:
     Description: A reference to the created ECS Cluster
-    Value: !Ref KtEcsCluster
+    Value: !Ref EcsCluster
     Export:
       Name: !Sub ${AWS::StackName}-ecs-cluster
 
-  KtEcsSecurityGroupExport:
+  EcsSecurityGroupExport:
     Description: A reference to the created SG
-    Value: !Ref KtEcsSecurityGroup
+    Value: !Ref EcsSecurityGroup
     Export:
       Name: !Sub ${AWS::StackName}-default-security-group
 
-  KtEcsRoleExport:
+  EcsRoleExport:
     Description: A reference to the created IAM Role
-    Value: !Ref KtEcsRole
+    Value: !Ref EcsRole
     Export:
       Name: !Sub ${AWS::StackName}-default-role
 
-  KtAlbArnExport:
+  AlbArnExport:
     Description: A reference to the created ALB
-    Value: !Ref KtAlb
+    Value: !Ref Alb
     Export:
       Name: !Sub ${AWS::StackName}-alb-arn
       
-  KtAlbDnsExport:
+  AlbDnsExport:
     Description: A reference to the created ALB
     Value: 
-      Fn::GetAtt: KtAlb.DNSName
+      Fn::GetAtt: Alb.DNSName
     Export:
       Name: !Sub ${AWS::StackName}-alb-dns
 
-  KtElbListenerArnExport:
+  ElbListenerArnExport:
     Description: A reference to the created listener
-    Value: !Ref KtListener
+    Value: !Ref Listener
     Export:
       Name: !Sub ${AWS::StackName}-elb-listener-arn

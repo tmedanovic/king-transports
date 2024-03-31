@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "KT frontend codebuild template"
+
+Parameters:
+
+  CodeBuildProjectName:
+    Description: Name of the code build project
+    Type: String
+    Default: "kt-ticket-booth-client"
+    
+  GitBuildspecLocation:
+    Description: Build spec location relative github root
+    Type: String
+    Default: "Clients/ticket-booth/buildspec.yml"
+    
+  ClientAppBucketName:
+    Description: Bucket name of client app (should be Route 53 FQDN of client app)
+    Type: String
+    Default: "tb.king-transports.com"
+    
+Resources:
+
+    IAMManagedPolicy:
+        Type: "AWS::IAM::ManagedPolicy"
+        Properties:
+            ManagedPolicyName: !Sub "CodeBuildBasePolicy-${CodeBuildProjectName}-${AWS::Region}"
+            Path: "/"
+            PolicyDocument: !Sub |
+                {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${CodeBuildProjectName}",
+                                "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/codebuild/${CodeBuildProjectName}:*"
+                            ],
+                            "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ]
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:s3:::codepipeline-${AWS::Region}-*"
+                            ],
+                            "Action": [
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:GetObjectVersion",
+                                "s3:GetBucketAcl",
+                                "s3:GetBucketLocation"
+                            ]
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "codebuild:CreateReportGroup",
+                                "codebuild:CreateReport",
+                                "codebuild:UpdateReport",
+                                "codebuild:BatchPutTestCases",
+                                "codebuild:BatchPutCodeCoverages"
+                            ],
+                            "Resource": [
+                                "arn:aws:codebuild:${AWS::Region}:${AWS::AccountId}:report-group/${CodeBuildProjectName}-*"
+                            ]
+                        }
+                    ]
+                }
+                
+    IAMRole:
+        Type: "AWS::IAM::Role"
+        Properties:
+            Path: "/"
+            RoleName: !Sub "codebuild-${CodeBuildProjectName}-service-role"
+            AssumeRolePolicyDocument:
+                Statement:
+                - Effect: Allow
+                  Principal:
+                    Service:
+                    - codebuild.amazonaws.com
+                  Action:
+                  - sts:AssumeRole
+            ManagedPolicyArns: 
+              - !Ref IAMManagedPolicy
+              - "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
+              - "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+
+    CodeBuildProject:
+        Type: "AWS::CodeBuild::Project"
+        Properties:
+            Name: !Ref CodeBuildProjectName
+            Source:
+                BuildSpec: !Ref GitBuildspecLocation
+                GitCloneDepth: 1
+                GitSubmodulesConfig: 
+                    FetchSubmodules: false
+                InsecureSsl: false
+                Location: "https://github.com/tmedanovic/king-transports.git"
+                ReportBuildStatus: false
+                Type: "GITHUB"
+            Artifacts: 
+                Type: "NO_ARTIFACTS"
+            Cache: 
+                Type: "NO_CACHE"
+            Environment: 
+                ComputeType: "BUILD_GENERAL1_SMALL"
+                EnvironmentVariables: 
+                  - 
+                    Name: "AWS_DEFAULT_REGION"
+                    Type: "PLAINTEXT"
+                    Value: !Ref AWS::Region
+                  - 
+                    Name: "AWS_ACCOUNT_ID"
+                    Type: "PLAINTEXT"
+                    Value: !Ref AWS::AccountId
+                  - 
+                    Name: "BUCKET_NAME"
+                    Type: "PLAINTEXT"
+                    Value: !Ref ClientAppBucketName
+                    
+                Image: "aws/codebuild/standard:7.0"
+                ImagePullCredentialsType: "CODEBUILD"
+                PrivilegedMode: false
+                Type: "LINUX_CONTAINER"
+            ServiceRole: !Ref IAMRole
+            TimeoutInMinutes: 60
+            QueuedTimeoutInMinutes: 480
+            EncryptionKey: !Sub "arn:aws:kms:${AWS::Region}:${AWS::AccountId}:alias/aws/s3"
+            BadgeEnabled: false
+            LogsConfig: 
+                CloudWatchLogs: 
+                    Status: "ENABLED"
+                S3Logs: 
+                    Status: "DISABLED"
+                    EncryptionDisabled: false
+            Visibility: "PRIVATE"

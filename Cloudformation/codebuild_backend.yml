@@ -1,22 +1,30 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "KT codebuild template"
+Description: "KT backend codebuild template"
 
 Parameters:
 
   CodeBuildProjectName:
     Description: Name of the code build project
     Type: String
-    Default: "kt-common"
+    Default: "kt-ticketing-service"
     
   EcrImageName:
     Description: Docker image name in ECR
     Type: String
-    Default: "king-transports/common"
+    Default: "king-transports/ticketing"
     
   GitBuildspecLocation:
     Description: Build spec location relative github root
     Type: String
-    Default: "Services/KingTransports.Common/buildspec.yml"
+    Default: "Services/KingTransports.TicketingService/buildspec.yml"
+    
+  DockerhubUsername:
+    Description: Dockerhub username for pulling images
+    Type: String
+    
+  DockerhubPassword:
+    Description: Dockerhub password for pulling images
+    Type: String
     
 Resources:
 
@@ -68,22 +76,23 @@ Resources:
                             ]
                         },
                         {
-                          "Effect": "Allow",
-                          "Action": [ "codeartifact:GetAuthorizationToken",
-                                      "codeartifact:GetRepositoryEndpoint",
-                                      "codeartifact:ReadFromRepository"
-                                      ],
-                          "Resource": "*"
+                            "Effect": "Allow",
+                            "Action": [ 
+                                "codeartifact:GetAuthorizationToken",
+                                "codeartifact:GetRepositoryEndpoint",
+                                "codeartifact:ReadFromRepository"
+                            ],
+                            "Resource": "*"
                         },
                         {       
-                          "Effect": "Allow",
-                          "Action": "sts:GetServiceBearerToken",
-                          "Resource": "*",
-                          "Condition": {
+                            "Effect": "Allow",
+                            "Action": "sts:GetServiceBearerToken",
+                            "Resource": "*",
+                            "Condition": {
                               "StringEquals": {
-                                  "sts:AWSServiceName": "codeartifact.amazonaws.com"
+                                "sts:AWSServiceName": "codeartifact.amazonaws.com"
                               }
-                          }
+                            }
                         }
                     ]
                 }
@@ -103,6 +112,7 @@ Resources:
                   - sts:AssumeRole
             ManagedPolicyArns: 
               - !Ref IAMManagedPolicy
+              - "arn:aws:iam::aws:policy/AWSCodeBuildAdminAccess"
               - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
               - "arn:aws:iam::aws:policy/AWSCodeArtifactAdminAccess"
 
@@ -141,11 +151,11 @@ Resources:
                   - 
                     Name: "DOCKERHUB_USERNAME"
                     Type: "PLAINTEXT"
-                    Value: "REPLACEME"
+                    Value: !Ref DockerhubUsername
                   - 
                     Name: "DOCKERHUB_PASS"
                     Type: "PLAINTEXT"
-                    Value: "REPLACEME"
+                    Value: !Ref DockerhubPassword
                   - 
                     Name: "IMAGE_TAG"
                     Type: "PLAINTEXT"
@@ -198,20 +208,3 @@ Resources:
                         }
                     ]
                 }    
-            # RepositoryPolicyText:
-                # Version: "2012-10-17"
-                # Statement:
-                    # -
-                      # Sid: AllowPushPull
-                      # Effect: Allow
-                      # Principal:
-                        # AWS:
-                          # - !Ref IAMRole
-                      # Action:
-                          # - "ecr:BatchCheckLayerAvailability"
-                          # - "ecr:BatchGetImage"
-                          # - "ecr:CompleteLayerUpload"
-                          # - "ecr:GetDownloadUrlForLayer"
-                          # - "ecr:InitiateLayerUpload"
-                          # - "ecr:PutImage"
-                          # - "ecr:UploadLayerPart"

@@ -13,17 +13,17 @@ Parameters:
     Description: Name of ECS Cluster stack to build off of
     Default: kt-ecs-cluster
     
-  KtMicroserviceName:
+  MicroserviceName:
     Type: String
     Description: Name of KT microservice
     Default: ticketing
 
-  KtMicroservicePath:
+  MicroservicePath:
     Type: String
     Description: KT microservice path
     Default: /ticketing*
     
-  KtAlbListnerRulePriority:
+  AlbListnerRulePriority:
     Type: Number
     Description: Listener rule priority
     Default: 1
@@ -40,7 +40,7 @@ Resources:
   TargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      Name: !Sub kt-${KtMicroserviceName}-elb-tg
+      Name: !Sub kt-${MicroserviceName}-elb-tg
       HealthCheckEnabled: true
       HealthCheckPort: 80
       HealthCheckProtocol: HTTP
@@ -61,17 +61,17 @@ Resources:
         - Field: path-pattern
           PathPatternConfig:
             Values:
-              - !Sub ${KtMicroservicePath}
+              - !Sub ${MicroservicePath}
       ListenerArn:
         Fn::ImportValue: !Sub ${EcsClusterStack}-elb-listener-arn
-      Priority: !Ref KtAlbListnerRulePriority
+      Priority: !Ref AlbListnerRulePriority
 
   FargateService:
     Type: AWS::ECS::Service
     DependsOn: ListenerRule
     Properties:
-      Name: !Sub kt-${KtMicroserviceName}-ecs-service
-      ServiceName: !Sub kt-${KtMicroserviceName}-ecs-service
+      Name: !Sub kt-${MicroserviceName}-ecs-service
+      ServiceName: !Sub kt-${MicroserviceName}-ecs-service
       Cluster:
         Fn::ImportValue: !Sub ${EcsClusterStack}-ecs-cluster
       DeploymentController:
@@ -81,7 +81,7 @@ Resources:
       LaunchType: FARGATE
       LoadBalancers:
         -
-          ContainerName: !Sub kt-${KtMicroserviceName}-ecs-task
+          ContainerName: !Sub kt-${MicroserviceName}-ecs-task
           ContainerPort: 80
           TargetGroupArn: !Ref TargetGroup
       NetworkConfiguration:
@@ -101,12 +101,12 @@ Resources:
   FargateServiceTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
-      Family: !Sub kt-${KtMicroserviceName}-ecs-task
+      Family: !Sub kt-${MicroserviceName}-ecs-task
       ContainerDefinitions:
         -
-          Name: !Sub kt-${KtMicroserviceName}-ecs-task
+          Name: !Sub kt-${MicroserviceName}-ecs-task
           Essential: true
-          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/king-transports/${KtMicroserviceName}:Latest"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/king-transports/${MicroserviceName}:Latest"
           HealthCheck:
             Command: [ "CMD-SHELL", "curl -f http://localhost/health || exit 1" ]
           LogConfiguration:
@@ -116,7 +116,7 @@ Resources:
                 awslogs-stream-prefix: kt
                 awslogs-region: !Ref AWS::Region
           PortMappings:
-            -   Name: !Sub kt-${KtMicroserviceName}-service-port
+            -   Name: !Sub kt-${MicroserviceName}-service-port
                 ContainerPort: 80
                 HostPort: 80
                 Protocol: "tcp"
